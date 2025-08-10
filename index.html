@@ -7,225 +7,93 @@
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg: #f7f7f8;
-      --fg: #111;
-      --muted: #6a6a6a;
-      --tile: #fff;
-      --tile-border: #d7d7dc;
-      --tile-locked: #e6f0ff;
-      --accent: #2b7cff;
-      --accent-weak:#e9f1ff;
-      --danger: #ff4d4f;
-      --life-on:#111;
-      --life-off:#c8c8cf;
-      --btn:#111;
-      --btn-fg:#fff;
-      --shadow: 0 6px 16px rgba(0,0,0,0.08);
+      --bg:#f7f7f8; --fg:#111; --muted:#6a6a6a;
+      --tile:#fff; --tile-border:#d7d7dc; --tile-locked:#e6f0ff;
+      --accent:#2b7cff; --accent-weak:#e9f1ff; --danger:#ff4d4f;
+      --life-on:#111; --life-off:#c8c8cf; --btn:#111; --btn-fg:#fff;
+      --shadow:0 6px 16px rgba(0,0,0,0.08);
 
       /* sizing */
-      --title-size: 30px;
-      --status-size: 15px;
-      --tile-radius: 14px;
-      --tile-gap: 8px;         /* tighter */
-      --key-gap: 8px;          /* tighter */
-      --control-h: 60px;       /* larger */
-      --outer-radius: 18px;
-      --outer-border: 3px;     /* thicker border around game area */
-      --outer-pad-top: 26px;   /* bigger top buffer */
-      --outer-pad-x: 14px;
-      --outer-pad-bot: 18px;
+      --title-size:30px; --status-size:15px;
+      --tile-radius:14px; --tile-gap:8px; --key-gap:8px; --control-h:60px;
+      --outer-radius:18px; --outer-border:3px;
+      --outer-pad-top:26px; --outer-pad-x:14px; --outer-pad-bot:18px;
     }
     [data-theme="dark"]{
-      --bg: #0e0f12;
-      --fg: #f2f3f5;
-      --muted: #9aa0a6;
-      --tile: #17181c;
-      --tile-border: #2a2d34;
-      --tile-locked: #172235;
-      --accent: #7aa6ff;
-      --accent-weak:#0f1a2b;
-      --danger: #ff6062;
-      --life-on:#f2f3f5;
-      --life-off:#3a3e46;
-      --btn:#f2f3f5;
-      --btn-fg:#0e0f12;
-      --shadow: 0 8px 18px rgba(0,0,0,0.32);
+      --bg:#0e0f12; --fg:#f2f3f5; --muted:#9aa0a6;
+      --tile:#17181c; --tile-border:#2a2d34; --tile-locked:#172235;
+      --accent:#7aa6ff; --accent-weak:#0f1a2b; --danger:#ff6062;
+      --life-on:#f2f3f5; --life-off:#3a3e46; --btn:#f2f3f5; --btn-fg:#0e0f12;
+      --shadow:0 8px 18px rgba(0,0,0,0.32);
     }
 
-    html,body{height:100%;}
-    body{
-      margin:0;
-      font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      background: var(--bg); color: var(--fg);
-      -webkit-tap-highlight-color: transparent;
-    }
+    html,body{height:100%}
+    body{margin:0;font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg);-webkit-tap-highlight-color:transparent}
 
-    /* Outer game frame (thicker border, rounded) */
     .frame{
-      min-height:100%;
-      display:flex; flex-direction:column;
-      padding: calc(env(safe-area-inset-top) + var(--outer-pad-top))
-               var(--outer-pad-x)
-               calc(env(safe-area-inset-bottom) + var(--outer-pad-bot));
-      max-width: 560px; margin: 0 auto;
-      border: var(--outer-border) solid var(--tile-border);
-      border-radius: var(--outer-radius);
-      box-sizing: border-box;
+      min-height:100%; display:flex; flex-direction:column;
+      padding:calc(env(safe-area-inset-top) + var(--outer-pad-top)) var(--outer-pad-x) calc(env(safe-area-inset-bottom) + var(--outer-pad-bot));
+      max-width:560px; margin:0 auto; border:var(--outer-border) solid var(--tile-border); border-radius:var(--outer-radius); box-sizing:border-box;
     }
 
-    /* Header is visually “transparent”: no band color; the page bg shows through */
-    header{
-      display:flex; align-items:center; justify-content:space-between;
-      padding: 0 2px;
-    }
-    .title{
-      font-weight:900; letter-spacing:0.6px; font-size: var(--title-size);
-      line-height: 1.1;
-      margin: 0 0 2px 0;
-    }
+    header{display:flex;align-items:center;justify-content:space-between;padding:0 2px}
+    .title{font-weight:900;letter-spacing:.6px;font-size:var(--title-size);line-height:1.1;margin:0 0 2px 0}
 
-    /* Theme switch */
-    .theme{
-      --w: 64px; --h: 32px; --pad: 3px;   /* slightly larger */
-      width: var(--w); height: var(--h); border-radius: 999px; position: relative;
-      background: var(--tile); border:1px solid var(--tile-border); box-shadow: var(--shadow);
-      cursor: pointer; display:flex; align-items:center; padding: var(--pad);
-      touch-action: manipulation;
-    }
-    .theme .knob{
-      width: calc(var(--h) - var(--pad)*2);
-      height: calc(var(--h) - var(--pad)*2);
-      border-radius:50%;
-      background: linear-gradient(180deg,#fff,#ddd);
-      display:grid; place-items:center;
-      transform: translateX(0);
-      transition: transform 180ms ease;
-      overflow:hidden;
-    }
-    [data-theme="dark"] .theme .knob{ transform: translateX(calc(var(--w) - var(--h))); background: linear-gradient(180deg,#23262d,#1a1d23);}
-    .theme .icon{ width:18px; height:18px; display:block; mask-size: cover; -webkit-mask-size: cover; background:#111; }
-    [data-theme="dark"] .theme .icon{ background:#f2f3f5; }
-    .icon.sun{
-      mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="%23000"><circle cx="12" cy="12" r="4"/><path d="M12 1v3M12 20v3M3 12H0M24 12h-3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M19.8 4.2l-2.1 2.1M6.3 17.7l-2.1 2.1"/></g></svg>') no-repeat 50% 50%;
-      -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="%23000"><circle cx="12" cy="12" r="4"/><path d="M12 1v3M12 20v3M3 12H0M24 12h-3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M19.8 4.2l-2.1 2.1M6.3 17.7l-2.1 2.1"/></g></svg>') no-repeat 50% 50%;
-    }
-    .icon.moon{
-      mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M21 13.5A9 9 0 0 1 10.5 3a8 8 0 1 0 10.5 10.5Z"/></svg>') no-repeat 50% 50%;
-      -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M21 13.5A9 9 0 0 1 10.5 3a8 8 0 1 0 10.5 10.5Z"/></svg>') no-repeat 50% 50%;
-    }
+    .theme{--w:64px;--h:32px;--pad:3px;width:var(--w);height:var(--h);border-radius:999px;background:var(--tile);border:1px solid var(--tile-border);box-shadow:var(--shadow);cursor:pointer;display:flex;align-items:center;padding:var(--pad);touch-action:manipulation}
+    .theme .knob{width:calc(var(--h) - var(--pad)*2);height:calc(var(--h) - var(--pad)*2);border-radius:50%;background:linear-gradient(180deg,#fff,#ddd);display:grid;place-items:center;transform:translateX(0);transition:transform 180ms ease;overflow:hidden}
+    [data-theme="dark"] .theme .knob{transform:translateX(calc(var(--w) - var(--h)));background:linear-gradient(180deg,#23262d,#1a1d23)}
+    .theme .icon{width:18px;height:18px;display:block;mask-size:cover;-webkit-mask-size:cover;background:#111}
+    [data-theme="dark"] .theme .icon{background:#f2f3f5}
+    .icon.sun{mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="%23000"><circle cx="12" cy="12" r="4"/><path d="M12 1v3M12 20v3M3 12H0M24 12h-3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M19.8 4.2l-2.1 2.1M6.3 17.7l-2.1 2.1"/></g></svg>') no-repeat 50% 50%;-webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="%23000"><circle cx="12" cy="12" r="4"/><path d="M12 1v3M12 20v3M3 12H0M24 12h-3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M19.8 4.2l-2.1 2.1M6.3 17.7l-2.1 2.1"/></g></svg>') no-repeat 50% 50%}
+    .icon.moon{mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M21 13.5A9 9 0 0 1 10.5 3a8 8 0 1 0 10.5 10.5Z"/></svg>') no-repeat 50% 50%;-webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M21 13.5A9 9 0 0 1 10.5 3a8 8 0 1 0 10.5 10.5Z"/></svg>') no-repeat 50% 50%}
 
-    /* Status bar (slightly larger) */
-    .status{
-      display:grid; grid-template-columns: 1fr auto 1fr; align-items:center;
-      gap:10px; padding: 6px 2px 10px;
-      font-weight:700; font-size: var(--status-size);
-    }
-    .lives{ display:flex; gap:10px; align-items:center;}
-    .dot{ width:12px; height:12px; border-radius:50%; background: var(--life-on); transform-origin:center; }
-    .dot.off{ background: var(--life-off); opacity:0.6; }
-    .dot.pop{ animation: pop 340ms ease; }
-    @keyframes pop {
-      0%{ transform: scale(1); }
-      35%{ transform: scale(1.3); }
-      60%{ transform: scale(0.85) rotate(-6deg); }
-      100%{ transform: scale(0); opacity:0; }
-    }
+    .status{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:6px 2px 10px;font-weight:700;font-size:var(--status-size)}
+    .lives{display:flex;gap:10px;align-items:center}
+    .dot{width:12px;height:12px;border-radius:50%;background:var(--life-on);transform-origin:center}
+    .dot.off{background:var(--life-off);opacity:.6}
+    .dot.pop{animation:pop 340ms ease}
+    @keyframes pop{0%{transform:scale(1)}35%{transform:scale(1.3)}60%{transform:scale(.85) rotate(-6deg)}100%{transform:scale(0);opacity:0}}
 
-    .mode{ display:flex; align-items:center; gap:10px; justify-self:center; color: var(--muted);}
-    .checkbox{
-      width:20px; height:20px; border:2px solid var(--muted); border-radius:4px; display:grid; place-items:center; font-size:15px; line-height:0;
-      cursor:pointer; user-select:none;
-    }
-    .checkbox.on{ border-color: var(--accent); color: var(--accent); }
-    .timer{ justify-self:end; font-variant-numeric: tabular-nums; }
+    .mode{display:flex;align-items:center;gap:10px;justify-self:center;color:var(--muted)}
+    .checkbox{width:20px;height:20px;border:2px solid var(--muted);border-radius:4px;display:grid;place-items:center;font-size:15px;line-height:0;cursor:pointer;user-select:none}
+    .checkbox.on{border-color:var(--accent);color:var(--accent)}
+    .timer{justify-self:end;font-variant-numeric:tabular-nums}
 
-    /* Board */
-    .board{ display:flex; flex-direction:column; gap:12px; margin-top: 2px; }
+    .board{display:flex;flex-direction:column;gap:12px;margin-top:2px}
+    .row{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--tile-gap);padding:2px;transform-origin:center}
+    .row.shake{animation:shake 300ms ease}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 
-    .row{ display:grid; grid-template-columns: repeat(5, 1fr); gap: var(--tile-gap); padding: 2px; transform-origin:center; }
-    .row.shake{ animation: shake 300ms ease; }
-    @keyframes shake{
-      0%,100%{ transform: translateX(0); }
-      20%{ transform: translateX(-6px); }
-      40%{ transform: translateX(6px); }
-      60%{ transform: translateX(-4px); }
-      80%{ transform: translateX(4px); }
-    }
+    .tile{aspect-ratio:1/1;border:2.5px solid var(--tile-border);background:var(--tile);border-radius:var(--tile-radius);display:grid;place-items:center;font-size:clamp(32px,10.5vw,40px);font-weight:900;letter-spacing:1px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+    .tile.lock{border-color:var(--accent);background:linear-gradient(180deg,var(--tile-locked),var(--tile))}
+    .tile .flash{position:absolute;inset:0;background:rgba(127,159,255,.18);opacity:0;transform:scale(.94);pointer-events:none}
+    .tile.flash-on .flash{animation:flash 180ms ease}
+    @keyframes flash{from{opacity:.5;transform:scale(1)}to{opacity:0;transform:scale(.92)}}
 
-    .tile{
-      aspect-ratio: 1/1;
-      border: 2.5px solid var(--tile-border);
-      background: var(--tile);
-      border-radius: var(--tile-radius);
-      display:grid; place-items:center;
-      font-size: clamp(32px, 10.5vw, 40px);    /* bigger */
-      font-weight:900;
-      letter-spacing: 1px;
-      position:relative; overflow:hidden;
-      box-shadow: var(--shadow);
-    }
-    .tile.lock{ border-color: var(--accent); background: linear-gradient(180deg, var(--tile-locked), var(--tile)); }
-    .tile .flash{ position:absolute; inset:0; background: rgba(127,159,255,0.18); opacity:0; transform: scale(0.94); pointer-events:none; }
-    .tile.flash-on .flash{ animation: flash 180ms ease; }
-    @keyframes flash{ from{ opacity:0.5; transform: scale(1); } to{ opacity:0; transform: scale(0.92); } }
+    .keys{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--key-gap);padding:2px}
+    .key{aspect-ratio:1/1;border-radius:var(--tile-radius);background:var(--tile);border:2.5px solid var(--tile-border);display:grid;place-items:center;font-weight:900;font-size:clamp(26px,8.4vw,32px);letter-spacing:1px;cursor:pointer;user-select:none;touch-action:manipulation;box-shadow:var(--shadow);transition:transform 80ms ease,opacity 120ms ease}
+    .key:active{transform:translateY(1px) scale(.98)}
+    .key.used{opacity:.35;filter:saturate(.4);pointer-events:none}
 
-    /* Keys (bigger squares, tighter gaps) */
-    .keys{ display:grid; grid-template-columns: repeat(5, 1fr); gap: var(--key-gap); padding: 2px; }
-    .key{
-      aspect-ratio:1/1; border-radius: var(--tile-radius);
-      background: var(--tile); border: 2.5px solid var(--tile-border);
-      display:grid; place-items:center;
-      font-weight:900; font-size: clamp(26px, 8.4vw, 32px);
-      letter-spacing: 1px;
-      cursor:pointer; user-select:none; touch-action: manipulation;
-      box-shadow: var(--shadow);
-      transition: transform 80ms ease, opacity 120ms ease;
-    }
-    .key:active{ transform: translateY(1px) scale(0.98); }
-    .key.used{ opacity: 0.35; filter: saturate(0.4); pointer-events:none; }
+    .controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px;margin-top:4px}
+    .btn{height:var(--control-h);border-radius:16px;background:var(--btn);color:var(--btn-fg);display:grid;place-items:center;font-weight:900;font-size:18px;letter-spacing:.4px;cursor:pointer;user-select:none;touch-action:manipulation;box-shadow:var(--shadow);transition:transform 80ms ease,opacity 120ms ease}
+    .btn:active{transform:translateY(1px) scale(.99)}
+    .btn.secondary{background:var(--tile);color:var(--fg);border:2.5px solid var(--tile-border)}
 
-    /* Controls (taller buttons) */
-    .controls{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding: 2px; margin-top: 4px;}
-    .btn{
-      height: var(--control-h);
-      border-radius: 16px; background: var(--btn); color: var(--btn-fg);
-      display:grid; place-items:center; font-weight:900; font-size: 18px; letter-spacing:0.4px;
-      cursor:pointer; user-select:none; touch-action: manipulation;
-      box-shadow: var(--shadow);
-      transition: transform 80ms ease, opacity 120ms ease;
-    }
-    .btn:active{ transform: translateY(1px) scale(0.99); }
-    .btn.secondary{ background: var(--tile); color: var(--fg); border: 2.5px solid var(--tile-border); }
+    .overlay{position:fixed;inset:0;display:none;place-items:center;padding:24px;background:color-mix(in oklab,var(--bg),rgba(0,0,0,.6) 30%);backdrop-filter:blur(4px);z-index:10}
+    .overlay.show{display:grid}
+    .card{width:100%;max-width:460px;background:var(--tile);color:var(--fg);border:2.5px solid var(--tile-border);border-radius:16px;padding:22px;box-shadow:var(--shadow);text-align:center}
+    .card h1{margin:8px 0 8px;font-size:28px;font-weight:900;letter-spacing:.5px}
+    .card p{margin:6px 0 14px;color:var(--muted);font-weight:700}
+    .card .bigbtn{margin-top:10px;height:56px;border-radius:14px;background:var(--btn);color:var(--btn-fg);display:grid;place-items:center;font-weight:900;letter-spacing:.4px}
 
-    /* Overlays */
-    .overlay{
-      position: fixed; inset:0; display:none; place-items:center; padding: 24px;
-      background: color-mix(in oklab, var(--bg), rgba(0,0,0,0.6) 30%);
-      backdrop-filter: blur(4px);
-      z-index: 10;
-    }
-    .overlay.show{ display:grid; }
-    .card{
-      width: 100%; max-width: 460px; background: var(--tile); color: var(--fg);
-      border: 2.5px solid var(--tile-border); border-radius: 16px; padding: 22px;
-      box-shadow: var(--shadow); text-align:center;
-    }
-    .card h1{ margin: 8px 0 8px; font-size: 28px; font-weight:900; letter-spacing:0.5px;}
-    .card p{ margin: 6px 0 14px; color: var(--muted); font-weight:700; }
-    .card .bigbtn{ margin-top:10px; height: 56px; border-radius: 14px; background: var(--btn); color: var(--btn-fg); display:grid; place-items:center; font-weight:900; letter-spacing:0.4px; }
+    .tile.success{animation:successTile 380ms ease forwards}
+    @keyframes successTile{0%{transform:scale(1);opacity:1}70%{transform:scale(1.22);opacity:.2}100%{transform:scale(1.22);opacity:0}}
 
-    /* Correct guess animation */
-    .tile.success{ animation: successTile 380ms ease forwards; }
-    @keyframes successTile{
-      0%{ transform: scale(1); opacity:1; }
-      70%{ transform: scale(1.22); opacity:0.2; }
-      100%{ transform: scale(1.22); opacity:0; }
-    }
+    .timer.flash{background:var(--accent-weak);border-radius:8px;padding:2px 6px;animation:tf 480ms ease}
+    @keyframes tf{from{background:var(--accent-weak)}to{background:transparent}}
 
-    .timer.flash{ background: var(--accent-weak); border-radius: 8px; padding:2px 6px; animation: tf 480ms ease; }
-    @keyframes tf{ from{ background: var(--accent-weak); } to{ background: transparent; } }
-
-    button,.key,.btn,.theme,.checkbox{ -webkit-touch-callout:none; }
+    button,.key,.btn,.theme,.checkbox{-webkit-touch-callout:none}
   </style>
 </head>
 <body>
@@ -239,12 +107,10 @@
 
     <div class="status">
       <div class="lives" id="lives"></div>
-
       <div class="mode">
         <div id="hardToggle" class="checkbox" role="checkbox" aria-checked="false" aria-label="hard mode"></div>
         <div>hard mode</div>
       </div>
-
       <div class="timer" id="timer">00:00</div>
     </div>
 
@@ -276,30 +142,24 @@
     </div>
   </div>
 
-  <!-- Embedded stub lists (fallback if external JSON files not present) -->
-  <script id="answers-json" type="application/json">
-    ["APPLE","BRAIN","CHAIR","DRIVE","PLANT","SCALE","CLOUD","MUSIC","ROUTE","NERVE"]
-  </script>
-  <script id="guesses-json" type="application/json">
-    ["APPLE","BRAIN","CHAIR","DRIVE","PLANT","SCALE","CLOUD","MUSIC","ROUTE","NERVE",
-     "ALERT","APRON","BRINE","BRINK","CHAIN","CRANE","CRANK","DRANK","RIVED","RULER",
-     "PLAIN","PLATE","SCALD","SCARF","CLOUT","CLODS","ROTOR","NURSE"]
-  </script>
+  <!-- Tiny overlay for loader/errors -->
+  <div class="overlay" id="loader">
+    <div class="card">
+      <h1>Loading word lists…</h1>
+      <p id="loaderMsg">Fetching answers.json and guesses.json</p>
+    </div>
+  </div>
 
   <script>
     'use strict';
 
-    /*** ---------- Utilities ---------- ***/
-    const $ = sel => document.querySelector(sel);
-    const $$ = sel => Array.from(document.querySelectorAll(sel));
-    const shuffle = arr => { for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];} return arr; };
+    const $ = s => document.querySelector(s);
+    const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
     const now = () => Date.now();
 
-    /*** ---------- State ---------- ***/
     const State = {
       ANSWERS: [],
       ACCEPTED_SET: new Set(),
-
       answer: "",
       locked: Array(5).fill(null),
       current: Array(5).fill(""),
@@ -308,24 +168,23 @@
       lives: 3,
       hardMode: false,
       levelsWon: 0,
-
       gameStartAt: null,
       levelStartAt: null,
       rafId: null,
-
       levelGuesses: 0,
     };
 
-    /*** ---------- DOM Refs ---------- ***/
     const answerRow = $("#answerRow");
-    const keysGrid = $("#keys");
-    const livesEl = $("#lives");
-    const timerEl = $("#timer");
-    const intro = $("#intro");
-    const lose = $("#lose");
-    const loseSub = $("#loseSub");
+    const keysGrid  = $("#keys");
+    const livesEl   = $("#lives");
+    const timerEl   = $("#timer");
+    const intro     = $("#intro");
+    const lose      = $("#lose");
+    const loseSub   = $("#loseSub");
+    const loader    = $("#loader");
+    const loaderMsg = $("#loaderMsg");
 
-    /*** ---------- Rendering ---------- ***/
+    /* ---------- Render ---------- */
     function renderAnswer(){
       answerRow.innerHTML = "";
       for(let i=0;i<5;i++){
@@ -333,7 +192,9 @@
         t.className = "tile" + (State.locked[i] ? " lock" : "");
         t.setAttribute("data-idx", i);
         t.textContent = State.locked[i] || State.current[i] || "";
-        const flash = document.createElement("div"); flash.className="flash"; t.appendChild(flash);
+        const flash = document.createElement("div");
+        flash.className = "flash";
+        t.appendChild(flash);
         answerRow.appendChild(t);
       }
     }
@@ -341,8 +202,10 @@
       keysGrid.innerHTML = "";
       for(const k of State.bank){
         const b = document.createElement("button");
-        b.className = "key" + (k.used ? " used":"");
-        b.textContent = k.ch; b.type = "button"; b.dataset.id = String(k.id);
+        b.className = "key" + (k.used ? " used" : "");
+        b.textContent = k.ch;
+        b.type = "button";
+        b.dataset.id = String(k.id);
         b.addEventListener("click", onKeyPress);
         keysGrid.appendChild(b);
       }
@@ -362,58 +225,43 @@
       setTimeout(()=> tile.classList.remove("flash-on"), 200);
     }
     function successAnimationThenNext(){
-      for(let i=0;i<5;i++){ const tile = answerRow.children[i]; if(tile) tile.classList.add("success"); }
-      setTimeout(()=>{ State.levelsWon++; flashSplit(); resetLevelForNext(); }, 450);
+      for(let i=0;i<5;i++){ const t = answerRow.children[i]; if(t) t.classList.add("success"); }
+      setTimeout(()=>{ State.levelsWon++; timerEl.classList.add("flash"); setTimeout(()=>timerEl.classList.remove("flash"), 480); resetLevelForNext(); }, 450);
     }
-    function rowShake(){
-      answerRow.classList.remove("shake"); void answerRow.offsetWidth; answerRow.classList.add("shake");
-      setTimeout(()=>answerRow.classList.remove("shake"), 320);
-    }
+    function rowShake(){ answerRow.classList.remove("shake"); void answerRow.offsetWidth; answerRow.classList.add("shake"); setTimeout(()=>answerRow.classList.remove("shake"), 320); }
 
     function timerFormat(ms){
       const total = Math.floor(ms/1000);
       const h = Math.floor(total/3600);
       const m = Math.floor((total%3600)/60);
       const s = total%60;
-      return h>0
-        ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
-        : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      return h>0 ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+                 : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
     function tick(){ if(!State.gameStartAt){ timerEl.textContent="00:00"; return; } timerEl.textContent = timerFormat(now()-State.gameStartAt); State.rafId = requestAnimationFrame(tick); }
     function startTimer(){ if(State.rafId) cancelAnimationFrame(State.rafId); State.rafId = requestAnimationFrame(tick); }
     function stopTimer(){ if(State.rafId) cancelAnimationFrame(State.rafId); State.rafId = null; }
-    function flashSplit(){ timerEl.classList.add("flash"); setTimeout(()=>timerEl.classList.remove("flash"), 480); }
 
-    /*** ---------- Input & Mechanics ---------- ***/
+    /* ---------- Input ---------- */
     function nextOpenSlot(){ for(let i=0;i<5;i++){ if(State.locked[i]) continue; if(!State.current[i]) return i; } return -1; }
-
     function onKeyPress(e){
       const id = Number(e.currentTarget.dataset.id);
       const k = State.bank.find(x=>x.id===id);
       if(!k || k.used) return;
-
-      const idx = nextOpenSlot();
-      if(idx===-1) return;
-
+      const idx = nextOpenSlot(); if(idx===-1) return;
       State.current[idx] = k.ch;
       State.filledFromKey[idx] = id;
       k.used = true;
-
       renderAnswer(); renderKeys(); flashTile(idx);
       maybeAutoSubmit();
     }
-
     function backspace(){
       for(let i=4;i>=0;i--){
         if(State.locked[i]) continue;
         if(State.current[i]){
           const keyId = State.filledFromKey[i];
-          if(keyId!==null){
-            const k = State.bank.find(x=>x.id===keyId);
-            if(k) k.used = false;
-          }
-          State.current[i] = "";
-          State.filledFromKey[i] = null;
+          if(keyId!==null){ const k = State.bank.find(x=>x.id===keyId); if(k) k.used=false; }
+          State.current[i]=""; State.filledFromKey[i]=null;
           renderAnswer(); renderKeys();
           break;
         }
@@ -435,43 +283,23 @@
       }
       renderAnswer(); renderKeys();
     }
-
     function loseLife(){
       if(State.lives<=0) return;
-      const activeIdx = State.lives;
-      const dot = livesEl.querySelector(`.dot[data-index="${activeIdx}"]`);
+      const dot = livesEl.querySelector(`.dot[data-index="${State.lives}"]`);
       if(dot){ dot.classList.add("pop"); setTimeout(()=>{ dot.classList.remove("pop"); dot.classList.add("off"); }, 340); }
-      State.lives--;
-      if(State.lives<=0){ gameOver(); }
+      State.lives--; if(State.lives<=0){ gameOver(); }
     }
-
     function maybeAutoSubmit(){
       if(!rowComplete()) return;
       const guess = buildGuess();
       const ans = State.answer;
-
       if(guess===ans){ State.levelGuesses++; successAnimationThenNext(); return; }
-
-      if(State.ACCEPTED_SET.has(guess)){
-        State.levelGuesses++;
-        const pattern = evaluateGuess(guess, ans);
-        markLocked(pattern, guess);
-        renderAnswer();
-        answerRow.classList.add("shake"); setTimeout(()=>answerRow.classList.remove("shake"), 300);
-        loseLife();
-        clearTransient();
-        return;
-      }
-
-      rowShake();
-      clearTransient();
+      if(State.ACCEPTED_SET.has(guess)){ State.levelGuesses++; const p = evaluateGuess(guess,ans); markLocked(p,guess); renderAnswer(); answerRow.classList.add("shake"); setTimeout(()=>answerRow.classList.remove("shake"),300); loseLife(); clearTransient(); return; }
+      rowShake(); clearTransient();
     }
 
-    /*** ---------- Level/Run ---------- ***/
-    function seedLetters(){
-      const chars = State.answer.split(""); shuffle(chars);
-      let idCounter = 0; State.bank = chars.map(ch => ({ id:idCounter++, ch, used:false }));
-    }
+    /* ---------- Level / Run ---------- */
+    function seedLetters(){ const chars = State.answer.split(""); shuffle(chars); let id=0; State.bank = chars.map(ch=>({id:id++, ch, used:false})); }
     function pickNewAnswer(){ State.answer = State.ANSWERS[Math.floor(Math.random()*State.ANSWERS.length)]; }
     function resetLevelForNext(){
       pickNewAnswer();
@@ -479,129 +307,85 @@
       State.current = Array(5).fill("");
       State.filledFromKey = Array(5).fill(null);
       State.levelGuesses = 0;
-      if(!State.hardMode){ State.lives = 3; }
+      if(!State.hardMode) State.lives = 3;
       setupLives(); seedLetters(); renderAnswer(); renderKeys();
       State.levelStartAt = now();
     }
     function newRun(showIntro=false){
-      State.levelsWon = 0;
-      State.lives = 3;
-      State.locked = Array(5).fill(null);
-      State.current = Array(5).fill("");
-      State.filledFromKey = Array(5).fill(null);
+      State.levelsWon = 0; State.lives = 3;
+      State.locked = Array(5).fill(null); State.current = Array(5).fill(""); State.filledFromKey = Array(5).fill(null);
       setupLives(); pickNewAnswer(); seedLetters(); renderAnswer(); renderKeys();
-      State.gameStartAt = null; State.levelStartAt = null;
-      timerEl.textContent = "00:00"; stopTimer();
-      if(showIntro){ intro.classList.add("show"); }
+      State.gameStartAt = null; State.levelStartAt = null; timerEl.textContent="00:00"; stopTimer();
+      if(showIntro) intro.classList.add("show");
     }
     function startRunNow(){ State.gameStartAt = now(); State.levelStartAt = now(); startTimer(); }
-
     function gameOver(){
       stopTimer();
-      const guesses = State.levelGuesses || 0;
-      const time = timerEl.textContent;
-      const levels = State.levelsWon;
-      loseSub.textContent = `${guesses} guesses • ${time} • ${levels} levels`;
+      loseSub.textContent = `${State.levelGuesses||0} guesses • ${timerEl.textContent} • ${State.levelsWon} levels`;
       lose.classList.add("show");
     }
 
-    /*** ---------- Controls & Toggles ---------- ***/
+    /* ---------- Controls ---------- */
     $("#backBtn").addEventListener("click", backspace);
     $("#shuffleBtn").addEventListener("click", shuffleBank);
 
-    // Theme toggle
     const themeToggle = $("#themeToggle");
     const knobIcon = themeToggle.querySelector(".icon");
-    function setTheme(theme){
-      document.documentElement.setAttribute("data-theme", theme);
-      knobIcon.className = "icon " + (theme==="light" ? "sun" : "moon");
-      try{ localStorage.setItem("jumbl-theme", theme); }catch{}
-    }
-    themeToggle.addEventListener("click", ()=>{
-      const cur = document.documentElement.getAttribute("data-theme") || "light";
-      setTheme(cur==="light" ? "dark" : "light");
-    });
+    function setTheme(t){ document.documentElement.setAttribute("data-theme",t); knobIcon.className = "icon " + (t==="light"?"sun":"moon"); try{localStorage.setItem("jumbl-theme",t);}catch{} }
+    themeToggle.addEventListener("click", ()=>{ const cur = document.documentElement.getAttribute("data-theme")||"light"; setTheme(cur==="light"?"dark":"light"); });
 
-    // Hard mode toggle: restart run AND start timer immediately
     const hardToggle = $("#hardToggle");
-    function renderHard(){
-      if(State.hardMode){ hardToggle.classList.add("on"); hardToggle.setAttribute("aria-checked","true"); hardToggle.textContent = "✓"; }
-      else{ hardToggle.classList.remove("on"); hardToggle.setAttribute("aria-checked","false"); hardToggle.textContent = ""; }
-    }
-    hardToggle.addEventListener("click", ()=>{
-      State.hardMode = !State.hardMode;
-      renderHard();
-      newRun(false);
-      startRunNow(); // <-- start timer immediately when toggled
-    });
+    function renderHard(){ if(State.hardMode){ hardToggle.classList.add("on"); hardToggle.setAttribute("aria-checked","true"); hardToggle.textContent="✓"; } else { hardToggle.classList.remove("on"); hardToggle.setAttribute("aria-checked","false"); hardToggle.textContent=""; } }
+    hardToggle.addEventListener("click", ()=>{ State.hardMode=!State.hardMode; renderHard(); newRun(false); startRunNow(); });
 
-    // Intro / Lose modal buttons
-    $("#playBtn").addEventListener("click", ()=>{ intro.classList.remove("show"); startRunNow(); });
-    $("#tryAgainBtn").addEventListener("click", ()=>{ lose.classList.remove("show"); newRun(false); startRunNow(); });
+    window.addEventListener("keydown",(e)=>{ const k=e.key.toUpperCase(); if(k==="BACKSPACE"){ e.preventDefault(); backspace(); return; } if(k.length===1 && k>="A" && k<="Z"){ const m=State.bank.find(b=>!b.used && b.ch===k); if(m){ const btn=keysGrid.querySelector(`.key[data-id="${m.id}"]`); if(btn) btn.click(); }} });
 
-    /*** ---------- Keyboard (dev) ---------- ***/
-    window.addEventListener("keydown", (e)=>{
-      const k = e.key.toUpperCase();
-      if(k==="BACKSPACE"){ e.preventDefault(); backspace(); return; }
-      if(k.length===1 && k>="A" && k<="Z"){
-        const match = State.bank.find(b=>!b.used && b.ch===k);
-        if(match){ const btn = keysGrid.querySelector(`.key[data-id="${match.id}"]`); if(btn){ btn.click(); } }
-      }
-    });
-
-    /*** ---------- Load Lists (external JSON if present) ---------- ***/
+    /* ---------- Word list loader (external only) ---------- */
     async function loadWordLists(){
-      // Try external files first (answers.json, guesses.json) — useful on GitHub Pages.
-      // Each should be a JSON array of UPPERCASE strings.
-      let extAnswers = null, extGuesses = null;
-      try{
-        const aResp = await fetch("answers.json", {cache:"no-store"});
-        if(aResp.ok) extAnswers = await aResp.json();
-      }catch{}
-      try{
-        const gResp = await fetch("guesses.json", {cache:"no-store"});
-        if(gResp.ok) extGuesses = await gResp.json();
-      }catch{}
+      loader.classList.add("show");
+      const bust = `?v=${Date.now()}`;               // cache-buster for GitHub Pages
+      let answers=null, guesses=null;
 
-      if(extAnswers && Array.isArray(extAnswers)) State.ANSWERS = extAnswers;
-      else{
-        try{ State.ANSWERS = JSON.parse($("#answers-json").textContent.trim()); }
-        catch{ State.ANSWERS = ["APPLE"]; }
+      try{
+        const r = await fetch(`answers.json${bust}`, {cache:"no-store"});
+        if(r.ok) answers = await r.json();
+      }catch(e){}
+      try{
+        const r = await fetch(`guesses.json${bust}`, {cache:"no-store"});
+        if(r.ok) guesses = await r.json();
+      }catch(e){}
+
+      if(!Array.isArray(answers) || !answers.length){
+        loaderMsg.textContent = "Missing answers.json next to index.html";
+        throw new Error("answers.json not found or invalid");
+      }
+      if(!Array.isArray(guesses) || !guesses.length){
+        loaderMsg.textContent = "Missing guesses.json next to index.html";
+        throw new Error("guesses.json not found or invalid");
       }
 
-      let accepted = [];
-      if(extGuesses && Array.isArray(extGuesses)) accepted = extGuesses;
-      else{
-        try{ accepted = JSON.parse($("#guesses-json").textContent.trim()); }
-        catch{ accepted = []; }
-      }
-      // Ensure answers are always accepted
-      State.ACCEPTED_SET = new Set([...(accepted||[]), ...State.ANSWERS]);
+      // Normalize: uppercase, 5 letters only
+      const up = s => (s||"").toString().trim().toUpperCase();
+      State.ANSWERS = answers.map(up).filter(w=>w.length===5);
+      const accepted = guesses.map(up).filter(w=>w.length===5);
+      State.ACCEPTED_SET = new Set([...accepted, ...State.ANSWERS]);
+
+      loader.classList.remove("show");
     }
 
-    /*** ---------- Boot ---------- ***/
-    function minimalTests(){
-      const testAns="APPLE";
-      const testChars = testAns.split("").sort().join("");
-      State.answer=testAns; seedLetters();
-      const bankChars=State.bank.map(b=>b.ch).sort().join("");
-      console.assert(bankChars===testChars,"Seed letters must be permutation of answer");
-      pickNewAnswer(); seedLetters(); renderKeys();
-      console.assert(typeof nextOpenSlot==="function","helpers wired");
-    }
-
+    /* ---------- Boot ---------- */
     async function boot(){
-      try{ const saved = localStorage.getItem("jumbl-theme"); if(saved) setTheme(saved); else setTheme("light"); }catch{ setTheme("light"); }
+      try{ const saved = localStorage.getItem("jumbl-theme"); setTheme(saved||"light"); }catch{ setTheme("light"); }
 
-      await loadWordLists();
+      try{
+        await loadWordLists();
+      }catch(err){
+        console.error(err);
+        // Keep the loader visible with the error message; don't start the game.
+        return;
+      }
 
-      renderHard();
-      setupLives();
-      renderAnswer();
-      renderKeys();
-      newRun(true); // show intro on first load
-
-      minimalTests();
+      renderHard(); setupLives(); renderAnswer(); renderKeys(); newRun(true);
     }
 
     document.addEventListener("DOMContentLoaded", boot);
