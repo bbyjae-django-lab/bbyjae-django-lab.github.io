@@ -153,25 +153,8 @@
     <div class="controls">
       <button id="shuffleBtn" aria-label="Shuffle letters">
         <!-- Clean, thick, two-curve shuffle with right arrowheads -->
-       <svg class="icon" viewBox="-2 -2 28 28" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <defs>
-    <linearGradient id="g-shuf" x1="0" y1="0" x2="24" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0"  style="stop-color:var(--grad1)"/>
-      <stop offset="0.5" style="stop-color:var(--grad2)"/>
-      <stop offset="1"  style="stop-color:var(--grad3)"/>
-    </linearGradient>
-  </defs>
+       <span class="btn-symbol grad-text">⤮</span>
 
-  <!-- upper crossing curve -->
-  <path d="M2 7 C 6 7, 9 10, 12 12 S 18 17, 22 17" stroke="url(#g-shuf)" stroke-width="3.2"/>
-
-  <!-- lower crossing curve -->
-  <path d="M2 17 C 6 17, 9 14, 12 12 S 18 7, 22 7" stroke="url(#g-shuf)" stroke-width="3.2"/>
-
-  <!-- arrowheads kept inside the viewBox -->
-  <polyline points="18,4.5 22,7 18,9.5"  stroke="url(#g-shuf)" stroke-width="3.2" fill="none"/>
-  <polyline points="18,14.5 22,17 18,19.5" stroke="url(#g-shuf)" stroke-width="3.2" fill="none"/>
-</svg>
       </button>
       <button id="backBtn" aria-label="Backspace"><span class="btn-symbol grad-text">⌫</span></button>
     </div>
