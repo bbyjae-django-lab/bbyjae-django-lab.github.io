@@ -108,6 +108,20 @@
     box-shadow:var(--shadow); min-height:64px; display:flex; align-items:center; justify-content:center; padding:0;
     touch-action:manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
   }
+  /* Press feedback for Shuffle + Backspace */
+#shuffleBtn, #backBtn{
+  transition: transform 90ms ease, box-shadow 90ms ease, filter 90ms ease;
+}
+#shuffleBtn:active, #backBtn:active,
+#shuffleBtn.is-pressed, #backBtn.is-pressed{
+  transform: scale(0.96);
+  box-shadow: 0 4px 14px rgba(0,0,0,.12);
+  filter: brightness(0.98) saturate(1.05);
+}
+.dark #shuffleBtn:active, .dark #backBtn:active,
+.dark #shuffleBtn.is-pressed, .dark #backBtn.is-pressed{
+  box-shadow: 0 6px 18px rgba(0,0,0,.55);
+}
   .btn-symbol{ line-height:1; display:block; font-weight:900; font-size:clamp(34px,10vw,42px); }
   .icon{ width:clamp(34px,10vw,42px); height:clamp(34px,10vw,42px); display:block; }
 
@@ -408,6 +422,18 @@
 
   shuffleBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); shuffleBank(); }, {passive:false});
   backBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); handleBackspace(); }, {passive:false});
+  /* Press feedback helper + attach */
+function attachPressFeedback(btn){
+  const press   = () => btn.classList.add('is-pressed');
+  const release = () => btn.classList.remove('is-pressed');
+  btn.addEventListener('pointerdown', press, {passive:true});
+  btn.addEventListener('pointerup', release, {passive:true});
+  btn.addEventListener('pointerleave', release, {passive:true});
+  btn.addEventListener('pointercancel', release, {passive:true});
+}
+attachPressFeedback(shuffleBtn);
+attachPressFeedback(backBtn);
+
 
   document.getElementById('playBtn').addEventListener('pointerdown', (e)=>{ e.preventDefault(); startGame(); }, {passive:false});
   document.getElementById('againBtn').addEventListener('pointerdown', (e)=>{ e.preventDefault(); gameOverModal.classList.remove('show'); startGame(); }, {passive:false});
