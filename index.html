@@ -153,22 +153,25 @@
     <div class="controls">
       <button id="shuffleBtn" aria-label="Shuffle letters">
         <!-- Clean, thick, two-curve shuffle with right arrowheads -->
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <defs>
-            <linearGradient id="g-shuf" x1="0" y1="0" x2="24" y2="0" gradientUnits="userSpaceOnUse">
-              <stop offset="0"  style="stop-color:var(--grad1)"/>
-              <stop offset="0.5" style="stop-color:var(--grad2)"/>
-              <stop offset="1"  style="stop-color:var(--grad3)"/>
-            </linearGradient>
-          </defs>
-          <!-- upper crossing curve -->
-          <path d="M3 7 C 7 7, 9.5 9.5, 12 12 C 14.5 14.5, 17 17, 21 17" stroke="url(#g-shuf)" stroke-width="3.2"/>
-          <!-- lower crossing curve -->
-          <path d="M3 17 C 7 17, 9.5 14.5, 12 12 C 14.5 9.5, 17 7, 21 7" stroke="url(#g-shuf)" stroke-width="3.2"/>
-          <!-- arrowheads -->
-          <path d="M21 7 L23.5 9.5 M21 7 L23.5 4.5" stroke="url(#g-shuf)" stroke-width="3.2"/>
-          <path d="M21 17 L23.5 19.5 M21 17 L23.5 14.5" stroke="url(#g-shuf)" stroke-width="3.2"/>
-        </svg>
+       <svg class="icon" viewBox="-2 -2 28 28" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <defs>
+    <linearGradient id="g-shuf" x1="0" y1="0" x2="24" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0"  style="stop-color:var(--grad1)"/>
+      <stop offset="0.5" style="stop-color:var(--grad2)"/>
+      <stop offset="1"  style="stop-color:var(--grad3)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- upper crossing curve -->
+  <path d="M2 7 C 6 7, 9 10, 12 12 S 18 17, 22 17" stroke="url(#g-shuf)" stroke-width="3.2"/>
+
+  <!-- lower crossing curve -->
+  <path d="M2 17 C 6 17, 9 14, 12 12 S 18 7, 22 7" stroke="url(#g-shuf)" stroke-width="3.2"/>
+
+  <!-- arrowheads kept inside the viewBox -->
+  <polyline points="18,4.5 22,7 18,9.5"  stroke="url(#g-shuf)" stroke-width="3.2" fill="none"/>
+  <polyline points="18,14.5 22,17 18,19.5" stroke="url(#g-shuf)" stroke-width="3.2" fill="none"/>
+</svg>
       </button>
       <button id="backBtn" aria-label="Backspace"><span class="btn-symbol grad-text">⌫</span></button>
     </div>
@@ -184,7 +187,7 @@
       <div class="content">
         Make any valid 5-letter word from the shuffled letters.<br/>
         A correct word advances the level and resets the timer.<br/><br/>
-        <strong>20s per word • 3 lives</strong>
+        <strong>25s per word • 3 lives</strong>
       </div>
       <div class="actions"><button id="playBtn" class="gbtn grad-bg">Play</button></div>
     </div>
@@ -212,7 +215,7 @@
 
 <script>
 (()=> {
-  const COUNTDOWN_SECONDS = 20;
+  const COUNTDOWN_SECONDS = 25;
   const STARTING_LIVES   = 3;
 
   let ACCEPTED_SET = new Set();
