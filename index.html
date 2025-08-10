@@ -9,9 +9,11 @@
   :root{
     --bg:#f7f7f9; --fg:#1f2328; --muted:#6a6f76;
     --tile:#ffffff; --tile-empty:#e9ebef;
-    /* Light: balanced + soft 3-stop gradient */
+
+    /* Balanced, soft 3-stop accent gradient (light) */
     --grad1:#FFB36C; --grad2:#FF8FC6; --grad3:#FFA6E6;
     --stop1:0%; --stop2:45%; --stop3:100%;
+
     --danger:#ff5c7a;
     --shadow:0 6px 20px rgba(0,0,0,.08);
     --radius:16px;
@@ -20,9 +22,11 @@
   .dark{
     --bg:#0f1115; --fg:#e6e7eb; --muted:#9aa1aa;
     --tile:#171a20; --tile-empty:#1f2430;
-    /* Dark: periwinkle→aqua→mint, balanced */
+
+    /* Balanced, soft 3-stop accent gradient (dark) */
     --grad1:#9AA9FF; --grad2:#71D3CF; --grad3:#46E39C;
     --stop1:0%; --stop2:45%; --stop3:100%;
+
     --danger:#ff6b88;
     --shadow:0 8px 24px rgba(0,0,0,.35);
     --sheet:#12161e;
@@ -38,18 +42,18 @@
   }
 
   .app{
-    width: min(var(--vw, 100vw), 600px);
-    margin: 0 auto;
+    width:min(var(--vw,100vw),600px);
+    margin:0 auto;
     min-height:100%;
     padding:
       calc(env(safe-area-inset-top,0px) + 16px)
       12px
       calc(env(safe-area-inset-bottom,0px) + 18px);
     display:grid;
-    grid-template-rows:auto auto auto auto auto auto 1fr; /* no stretching under timer */
+    grid-template-rows:auto auto auto auto auto auto 1fr; /* keeps space below buttons, not under timer */
     gap:12px;
   }
-  @supports (min-height: 100dvh){ .app{ min-height:100dvh; } }
+  @supports(min-height:100dvh){ .app{ min-height:100dvh; } }
 
   /* Reusable gradient helpers */
   .grad-bg{
@@ -63,13 +67,13 @@
 
   /* Header */
   header{
-    display:grid; grid-template-columns: 1fr auto 1fr;
+    display:grid; grid-template-columns:1fr auto 1fr;
     align-items:center; gap:8px; padding-block:4px;
   }
   .title{
     grid-column:2; text-align:center;
     font-weight:900; letter-spacing:1.4px;
-    font-size:clamp(44px, 12vw, 64px);
+    font-size:clamp(44px,12vw,64px);
     line-height:1.05;
     margin-top:10px; margin-bottom:16px;
   }
@@ -77,57 +81,75 @@
 
   .theme-toggle{
     justify-self:end; border:none; padding:8px; border-radius:999px;
-    box-shadow:var(--shadow); touch-action: manipulation;
+    box-shadow:var(--shadow); touch-action:manipulation;
   }
   .theme-toggle svg{ width:28px; height:28px; display:block; color:#fff; }
-  .theme-toggle.grad-bg{ }
 
-  /* Lives: rounded boxes */
-  .lives{ display:flex; justify-content:center; gap:8px; }
-  .life{ width:16px; height:16px; border-radius:10px; background:var(--tile-empty); box-shadow:var(--shadow); }
-  .life.on.grad-bg{ }
+  /* Lives: rounded boxes with continuous gradient across the 3 */
+  .lives{ display:flex; justify-content:center; gap:8px; --cells:3; }
+  .life{
+    width:16px; height:16px; border-radius:10px;
+    background:var(--tile-empty); box-shadow:var(--shadow);
+  }
+  /* paint ON state AFTER base so it wins */
+  .life.on{
+    background-image:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3));
+    background-size:calc(var(--cells)*100%) 100%;
+    background-repeat:no-repeat;
+  }
+  .life:nth-child(1){ --i:0; }
+  .life:nth-child(2){ --i:1; }
+  .life:nth-child(3){ --i:2; }
+  .life.on{ background-position:calc(var(--i,0) * -100%) 0; }
 
   /* Level (numerals) */
   .levelbar{ display:flex; align-items:center; justify-content:flex-start; font-size:14px; color:var(--muted); padding:0 2px; }
 
-  /* Countdown — tight, no extra space */
+  /* Countdown (tight) */
   .countdown{ background:var(--tile); border-radius:var(--radius); box-shadow:var(--shadow); padding:8px 10px; }
   .cd-bar{ position:relative; height:16px; border-radius:12px; overflow:hidden; background:var(--tile-empty); }
-  .cd-fill{ position:absolute; inset:0 auto 0 0; width:0%; transition: width 100ms linear; will-change: width; filter:saturate(.9) brightness(1.02); }
-  .cd-fill.grad-bg{ }
+  .cd-fill{ position:absolute; inset:0 auto 0 0; width:0%; transition:width 100ms linear; will-change:width; }
+  .cd-fill.grad-bg{}
 
-  /* Tiles (answer row) */
-  .answer-row{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:6px; }
+  /* Answer tiles: continuous gradient across 5 cells */
+  .answer-row{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:6px; --tiles:5; }
   .tile{
-    aspect-ratio:1/1; display:grid; place-items:center;
-    border-radius:14px; color:var(--fg);
-    font-size:clamp(24px,8vw,32px); font-weight:900; letter-spacing:1px;
-    box-shadow:var(--shadow);
-    transition: transform .2s ease, opacity .2s ease;
-    user-select:none; -webkit-user-select:none;
-    opacity:.65; /* empty look */
+    aspect-ratio:1/1; display:grid; place-items:center; border-radius:14px;
+    box-shadow:var(--shadow); user-select:none; -webkit-user-select:none;
+    /* gradient slice from a continuous strip */
+    background-image:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3));
+    background-size:calc(var(--tiles)*100%) 100%;
+    background-repeat:no-repeat;
+    color:#fff; /* requested: white guessed letters in light mode (also great in dark) */
+    font-weight:900; font-size:clamp(24px,8vw,32px); letter-spacing:1px;
+    opacity:.65; transition:opacity .2s ease;
   }
   .tile.filled{ opacity:1; }
-  .tile.correct{ animation: correctGrow 240ms ease; }
-  .answer-row.shake{ animation: shake 260ms ease; }
+  .answer-row.shake{ animation:shake 260ms ease; }
+  .tile:nth-child(1){ --i:0; } .tile:nth-child(2){ --i:1; }
+  .tile:nth-child(3){ --i:2; } .tile:nth-child(4){ --i:3; }
+  .tile:nth-child(5){ --i:4; }
+  .tile{ background-position:calc(var(--i,0) * -100%) 0; }
 
-  /* Bank */
+  /* Letter bank */
   .bank{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:2px; }
   .bank button{
     aspect-ratio:1/1; border:none; border-radius:14px; background:var(--tile);
-    box-shadow:var(--shadow); touch-action: manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
-    display:flex; align-items:center; justify-content:center;
+    box-shadow:var(--shadow); display:flex; align-items:center; justify-content:center;
+    touch-action:manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
   }
-  .bank button:disabled{ opacity:.35; } /* equal sizes */
+  .bank button:disabled{ opacity:.35; }
   .bank .letter{ font-size:clamp(20px,7vw,28px); font-weight:900; letter-spacing:1px; }
 
+  /* Controls (big icons) */
   .controls{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:2px; }
   .controls button{
     border:none; border-radius:14px; background:var(--tile); color:var(--fg);
-    box-shadow:var(--shadow); min-height:64px; touch-action: manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
-    display:flex; align-items:center; justify-content:center; padding:0;
+    box-shadow:var(--shadow); min-height:64px; display:flex; align-items:center; justify-content:center; padding:0;
+    touch-action:manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
   }
-  .btn-symbol{ line-height:1; display:block; font-weight:900; font-size:clamp(28px,9vw,36px); }
+  .btn-symbol{ line-height:1; display:block; font-weight:900; font-size:clamp(34px,10vw,42px); } /* ⌫ */
+  .icon{ width:clamp(34px,10vw,42px); height:clamp(34px,10vw,42px); display:block; } /* shuffle SVG */
 
   /* Spacer pushes leftover space below buttons (not under timer) */
   .spacer{ min-height:1px; }
@@ -144,15 +166,9 @@
     display:grid; grid-template-rows:auto 1fr auto; gap:12px; text-align:center;
   }
   .sheet h2{ margin:0; font-size:22px; }
-  .gbtn{
-    border:none; border-radius:14px; color:white; padding:14px; font-weight:800;
-    box-shadow:var(--shadow); filter:saturate(.9) brightness(1.02);
-  }
-
-  .hidden{ display:none !important; }
+  .gbtn{ border:none; border-radius:14px; color:white; padding:14px; font-weight:800; box-shadow:var(--shadow); }
 
   /* Animations */
-  @keyframes correctGrow{ 0%{transform:scale(1);opacity:1;}60%{transform:scale(1.2);opacity:.9;}100%{transform:scale(1);opacity:1;} }
   @keyframes shake{ 0%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0);} }
 
   button{ min-height:44px; }
@@ -179,7 +195,24 @@
     <div class="bank" id="bankRow" aria-label="Letter bank"></div>
 
     <div class="controls">
-      <button id="shuffleBtn" aria-label="Shuffle letters"><span class="btn-symbol grad-text">⇄</span></button>
+      <button id="shuffleBtn" aria-label="Shuffle letters">
+        <!-- Thick, rounded shuffle icon (gradient stroke) -->
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <defs>
+            <linearGradient id="g-shuf" x1="0" y1="0" x2="24" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0"  style="stop-color:var(--grad1)"/>
+              <stop offset="0.5" style="stop-color:var(--grad2)"/>
+              <stop offset="1"  style="stop-color:var(--grad3)"/>
+            </linearGradient>
+          </defs>
+          <!-- upper curve -->
+          <path d="M3 7c4 0 6 3 9 6h4" stroke="url(#g-shuf)" stroke-width="3.1"/>
+          <path d="M19 9l3 3-3 3" stroke="url(#g-shuf)" stroke-width="3.1"/>
+          <!-- lower curve -->
+          <path d="M3 17c4 0 6-3 9-6h4" stroke="url(#g-shuf)" stroke-width="3.1"/>
+          <path d="M19 9l3 3-3 3" stroke="url(#g-shuf)" stroke-width="3.1" transform="translate(0,4)"/>
+        </svg>
+      </button>
       <button id="backBtn" aria-label="Backspace"><span class="btn-symbol grad-text">⌫</span></button>
     </div>
 
@@ -222,11 +255,11 @@
 
 <script>
 (()=> {
-  // ===== Config =====
+  /* ===== Config ===== */
   const COUNTDOWN_SECONDS = 30;
   const STARTING_LIVES   = 3;
 
-  // ===== State =====
+  /* ===== State ===== */
   let ACCEPTED_SET = new Set();
   let ANSWER_POOL  = [];
   let ANSWER_SET   = new Set();
@@ -238,7 +271,7 @@
   let wordTimerInterval = null;
   let isAnimating = false;
 
-  // ===== Elements =====
+  /* ===== Elements ===== */
   const livesRow   = document.getElementById('livesRow');
   const levelLabel = document.getElementById('levelLabel');
   const cdFill     = document.getElementById('cdFill');
@@ -258,13 +291,13 @@
   const themeBtn     = document.getElementById('themeBtn');
   const themeIcon    = document.getElementById('themeIcon');
 
-  // ===== Utilities =====
+  /* ===== Utilities ===== */
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
   const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
   const randInt = n => Math.floor(Math.random()*n);
   function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=randInt(i+1); [a[i],a[j]]=[a[j],a[i]]; } }
 
-  // Visual viewport width lock (fixes iOS zoom mismatch)
+  /* VisualViewport width lock (prevents iOS zoom mismatch) */
   function setVwVar(){
     const vv = window.visualViewport;
     const vw = vv ? vv.width : Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -279,7 +312,7 @@
   window.addEventListener('resize', setVwVar);
   window.addEventListener('pageshow', setVwVar);
 
-  // Icons: crisp sun (perfect circle of dots) / crescent moon
+  /* Theme icons: perfect-circle sun / crescent moon */
   function setSun(){
     themeIcon.innerHTML = `
       <circle cx="12" cy="12" r="4"/>
@@ -302,7 +335,7 @@
   }
   function toggleTheme(){ setTheme(document.documentElement.classList.contains('dark')?'light':'dark'); }
 
-  // ===== Data I/O =====
+  /* ===== Data I/O ===== */
   async function loadWordLists(){
     fetchModal.classList.add('show'); fetchStatus.textContent='Fetching lists…'; retryBtn.disabled=true;
     try{
@@ -333,7 +366,7 @@
     }
   }
 
-  // ===== Game loop =====
+  /* ===== Game loop ===== */
   function resetState(){ lives=STARTING_LIVES; level=1; current=[]; bank=[]; }
   function startGame(){ resetState(); introModal.classList.remove('show'); gameOverModal.classList.remove('show'); nextWord(false); renderUI(); }
 
@@ -370,7 +403,7 @@
     gameOverModal.classList.add('show');
   }
 
-  // ===== Input =====
+  /* ===== Input ===== */
   function handleLetterTap(letter, bankIndex){
     if(isAnimating) return;
     if(bank[bankIndex]?.used) return;
@@ -398,8 +431,10 @@
     const isValid = ACCEPTED_SET.has(upper) || ANSWER_SET.has(upper);
     if(isValid){
       isAnimating=true;
-      document.querySelectorAll('.tile').forEach(t=>t.classList.add('correct'));
-      await sleep(200); isAnimating=false;
+      // small success pulse (CSS kept minimal for perf)
+      answerRow.classList.add('shake'); await sleep(60); answerRow.classList.remove('shake');
+      await sleep(120);
+      isAnimating=false;
       nextWord(true); renderUI();
     }else{
       isAnimating=true;
@@ -409,22 +444,25 @@
     }
   }
 
-  // ===== Render =====
+  /* ===== Render ===== */
   function renderUI(){
-    // Lives
+    // Lives: gradient ON squares, muted OFF squares
     livesRow.innerHTML='';
     for(let i=0;i<STARTING_LIVES;i++){
-      const d=document.createElement('div'); d.className='life'+(i<lives?' on grad-bg':''); livesRow.appendChild(d);
+      const d=document.createElement('div');
+      d.className='life'+(i<lives?' on':'');
+      livesRow.appendChild(d);
     }
+
     // Numeral level
     levelLabel.textContent='lvl '+Math.max(1,level);
 
-    // Answer row (gradient background tiles, bold letters)
+    // Answer row (continuous gradient slices)
     answerRow.innerHTML='';
     for(let i=0;i<5;i++){
       const t=document.createElement('div');
-      t.className='tile grad-bg'+(current[i]?' filled':'');
-      t.textContent=current[i]?.ch??''; // solid text for readability
+      t.className='tile'+(current[i]?' filled':'');
+      t.textContent=current[i]?.ch??'';
       answerRow.appendChild(t);
     }
 
@@ -433,36 +471,35 @@
     bank.forEach((b,idx)=>{
       const btn=document.createElement('button');
       btn.type='button'; btn.disabled=b.used;
-      btn.dataset.index = String(idx);
+      btn.dataset.index=String(idx);
       btn.setAttribute('aria-label',`Use letter ${b.ch}`);
       const span=document.createElement('span');
-      span.className='letter grad-text';
-      span.textContent=b.ch;
-      btn.appendChild(span);
-      bankRow.appendChild(btn);
+      span.className='letter grad-text'; span.textContent=b.ch;
+      btn.appendChild(span); bankRow.appendChild(btn);
     });
   }
 
-  // ===== Wiring (fast pointer events) =====
-  document.getElementById('bankRow').addEventListener('pointerdown', (e)=>{
-    const btn = e.target.closest('button');
-    if(!btn || btn.disabled) return;
-    const idx = Number(btn.dataset.index);
+  /* ===== Wiring ===== */
+  bankRow.addEventListener('pointerdown', (e)=>{
+    const btn=e.target.closest('button');
+    if(!btn||btn.disabled) return;
+    const idx=Number(btn.dataset.index);
     if(Number.isInteger(idx)) handleLetterTap(bank[idx].ch, idx);
   }, {passive:true});
 
   shuffleBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); shuffleBank(); }, {passive:false});
   backBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); handleBackspace(); }, {passive:false});
-  playBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); startGame(); }, {passive:false});
-  againBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); gameOverModal.classList.remove('show'); startGame(); }, {passive:false});
-  retryBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); loadWordLists(); }, {passive:false});
+
+  document.getElementById('playBtn').addEventListener('pointerdown', (e)=>{ e.preventDefault(); startGame(); }, {passive:false});
+  document.getElementById('againBtn').addEventListener('pointerdown', (e)=>{ e.preventDefault(); gameOverModal.classList.remove('show'); startGame(); }, {passive:false});
+  document.getElementById('retryBtn').addEventListener('pointerdown', (e)=>{ e.preventDefault(); loadWordLists(); }, {passive:false});
   themeBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); toggleTheme(); }, {passive:false});
 
-  // Theme boot
+  /* Theme boot */
   setTheme(sessionStorage.getItem('jumbl-theme')
     || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'));
 
-  // Boot
+  /* Boot */
   loadWordLists();
 })();
 </script>
