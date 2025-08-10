@@ -50,7 +50,7 @@
 
   header{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px; padding-block:4px; }
   .title{ grid-column:2; text-align:center; font-weight:900; letter-spacing:1.4px; font-size:clamp(44px,12vw,64px); line-height:1.05; margin-top:10px; margin-bottom:16px; }
-  .theme-toggle{ justify-self:end; border:none; padding:8px; border-radius:999px; box-shadow:var(--shadow); touch-action:manipulation; }
+  .theme-toggle{ justify-self:end; border:none; padding:6px; border-radius:999px; box-shadow:var(--shadow); touch-action:manipulation; }
   .theme-toggle svg{ width:28px; height:28px; display:block; color:#fff; }
 
   /* Lives: continuous gradient across all 3, dim when lost */
@@ -81,7 +81,7 @@
   .tile{
     --cells:5; --i:0;
     aspect-ratio:1/1; display:grid; place-items:center; border-radius:14px; box-shadow:var(--shadow);
-    font-weight:900; font-size:clamp(24px,8vw,32px); letter-spacing:1px; color:#fff;
+    font-weight:900; font-size:clamp(28px,9vw,36px); letter-spacing:1px; color:#fff;
     background-image:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3));
     background-size:calc(var(--cells)*100%) 100%;
     /* CORRECT slice position */
@@ -116,14 +116,14 @@
 }
 
 
-  .bank .letter{ font-size:clamp(20px,7vw,28px); font-weight:900; letter-spacing:1px; }
+  .bank .letter{ font-size:clamp(24px,8vw,34px); font-weight:900; letter-spacing:1px; }
 
   .controls{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:2px; }
   .controls button{
-    border:none; border-radius:14px; background:var(--tile); color:var(--fg);
-    box-shadow:var(--shadow); min-height:64px; display:flex; align-items:center; justify-content:center; padding:0;
-    touch-action:manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
-  }
+  border:none; border-radius:14px; background:var(--tile); color:var(--fg);
+  box-shadow:var(--shadow); min-height:56px; display:flex; align-items:center; justify-content:center; padding:0;
+  touch-action:manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
+}
   /* Press feedback for Shuffle + Backspace */
 #shuffleBtn, #backBtn{
   transition: transform 90ms ease, box-shadow 90ms ease, filter 90ms ease;
@@ -138,8 +138,8 @@
 .dark #shuffleBtn.is-pressed, .dark #backBtn.is-pressed{
   box-shadow: 0 6px 18px rgba(0,0,0,.55);
 }
-  .btn-symbol{ line-height:1; display:block; font-weight:900; font-size:clamp(34px,10vw,42px); }
-  .icon{ width:clamp(34px,10vw,42px); height:clamp(34px,10vw,42px); display:block; }
+  .btn-symbol{ line-height:1; display:block; font-weight:900; font-size:clamp(40px,12vw,52px); }
+.icon{ width:clamp(40px,12vw,52px); height:clamp(40px,12vw,52px); display:block; }
 
   .spacer{ min-height:1px; }
 
@@ -154,7 +154,7 @@
     display:grid; grid-template-rows:auto 1fr auto; gap:12px; text-align:center;
   }
   .sheet h2{ margin:0; font-size:22px; }
-  .gbtn{ border:none; border-radius:14px; color:white; padding:14px; font-weight:800; box-shadow:var(--shadow); }
+  .gbtn{ border:none; border-radius:14px; color:white; padding:12px; font-weight:800; box-shadow:var(--shadow); }
 
   @keyframes shake{ 0%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0);} }
   button{ min-height:44px; }
