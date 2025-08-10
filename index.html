@@ -9,8 +9,8 @@
   :root{
     --bg:#f7f7f9; --fg:#1f2328; --muted:#6a6f76;
     --tile:#ffffff; --tile-empty:#e9ebef;
-    --accent:#6b8afd; --ok:#35c47c;
-    --accent-weak:#c9d4ff;
+    /* Light mode warm gradient */
+    --grad1:#ff9a5a; --grad2:#ff6bb5;
     --danger:#ff5c7a;
     --shadow:0 6px 20px rgba(0,0,0,.08);
     --radius:16px;
@@ -19,8 +19,8 @@
   .dark{
     --bg:#0f1115; --fg:#e6e7eb; --muted:#9aa1aa;
     --tile:#171a20; --tile-empty:#1f2430;
-    --accent:#8aa4ff; --ok:#3ed695;
-    --accent-weak:#2b3760;
+    /* Dark mode cool gradient */
+    --grad1:#8aa4ff; --grad2:#3ed695;
     --danger:#ff6b88;
     --shadow:0 8px 24px rgba(0,0,0,.35);
     --sheet:#12161e;
@@ -46,6 +46,7 @@
     max-width:600px; margin:0 auto;
   }
 
+  /* Transparent header */
   header{
     display:grid; grid-template-columns: 1fr auto 1fr;
     align-items:center; gap:8px;
@@ -54,33 +55,58 @@
     grid-column:2; text-align:center;
     font-weight:900; letter-spacing:1px;
     font-size:clamp(22px,5.2vw,28px);
+    /* Gradient text for JUMBL */
+    background:linear-gradient(90deg, var(--grad1), var(--grad2));
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent;
   }
   .theme-toggle{
-    justify-self:end; border:none; background:transparent;
+    justify-self:end; border:none; background:linear-gradient(90deg, var(--grad1), var(--grad2));
     padding:6px; border-radius:999px;
+    box-shadow:var(--shadow);
     touch-action: manipulation;
   }
   .theme-toggle svg{
-    width:28px; height:28px; display:block;
+    width:28px; height:28px; display:block; color:#fff;
     filter: drop-shadow(0 2px 6px rgba(0,0,0,.12));
   }
-  .dark .theme-toggle svg{ color:#e6e7eb; }
-  :not(.dark) .theme-toggle svg{ color:#1f2328; }
 
-  /* Lives: rounded squares */
+  /* Lives: rounded boxes with gradient when active */
   .lives{ display:flex; justify-content:center; gap:8px; }
-  .life{ width:12px; height:12px; border-radius:6px; background:var(--accent-weak); }
-  .life.on{ background:var(--accent); }
+  .life{
+    width:16px; height:16px; border-radius:10px;
+    background:var(--tile-empty); box-shadow:var(--shadow);
+  }
+  .life.on{
+    background:linear-gradient(90deg, var(--grad1), var(--grad2));
+  }
 
-  .levelbar{ display:flex; align-items:center; justify-content:flex-start; font-size:14px; color:var(--muted); padding:0 2px; }
+  /* Level label (numerals) */
+  .levelbar{
+    display:flex; align-items:center; justify-content:flex-start;
+    font-size:14px; color:var(--muted); padding:0 2px;
+  }
 
-  /* Countdown */
-  .countdown{ background:var(--tile); border-radius:var(--radius); box-shadow:var(--shadow); padding:10px 12px 12px; }
-  .cd-bar{ position:relative; height:16px; border-radius:12px; overflow:hidden; background:var(--tile-empty); }
-  .cd-fill{ position:absolute; inset:0 auto 0 0; width:0%; background:linear-gradient(90deg, var(--accent), var(--ok)); transition: width 100ms linear; will-change: width; }
-  .cd-text{ position:absolute; left:10px; top:50%; transform:translateY(-50%); font-variant-numeric: tabular-nums; font-size:13px; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); pointer-events:none; }
+  /* Countdown: big bar, no numeric text */
+  .countdown{
+    background:var(--tile); border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:10px 12px 12px;
+  }
+  .cd-bar{
+    position:relative; height:16px; border-radius:12px; overflow:hidden;
+    background:var(--tile-empty);
+  }
+  .cd-fill{
+    position:absolute; inset:0 auto 0 0; width:0%;
+    background:linear-gradient(90deg, var(--grad1), var(--grad2));
+    transition: width 100ms linear; will-change: width;
+  }
 
-  .answer-row{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:8px; }
+  .answer-row{
+    display:grid; grid-template-columns:repeat(5,1fr);
+    gap:8px; margin-top:8px; /* closer to bar */
+  }
   .tile{
     aspect-ratio:1/1; display:grid; place-items:center;
     border-radius:14px; background:var(--tile-empty);
@@ -94,7 +120,10 @@
   .tile.correct{ animation: correctGrow 240ms ease; }
   .answer-row.shake{ animation: shake 260ms ease; }
 
-  .bank{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:6px; }
+  .bank{
+    display:grid; grid-template-columns:repeat(5,1fr);
+    gap:10px; margin-top:6px;
+  }
   .bank button{
     aspect-ratio:1/1; border:none; border-radius:14px;
     background:var(--tile); color:var(--fg);
@@ -104,7 +133,9 @@
   }
   .bank button:disabled{ opacity:.35; transform:scale(.97); }
 
-  .controls{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:2px; }
+  .controls{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:2px;
+  }
   .controls button{
     border:none; border-radius:14px; background:var(--tile); color:var(--fg);
     font-size:clamp(16px,4.5vw,18px); font-weight:800; box-shadow:var(--shadow);
@@ -123,15 +154,25 @@
     border-radius:24px; padding:22px 18px 16px; box-shadow:var(--shadow);
     display:grid; grid-template-rows:auto 1fr auto; gap:12px; text-align:center;
   }
-  .sheet h2{ margin:0; font-size:22px; }
+  .sheet h2{
+    margin:0; font-size:22px;
+    background:linear-gradient(90deg, var(--grad1), var(--grad2));
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
   .sheet .content{ overflow:auto; -webkit-overflow-scrolling:touch; font-size:15px; color:var(--muted); line-height:1.5; }
   .sheet .actions{ display:grid; gap:8px; }
-  .gbtn{ border:none; border-radius:14px; color:white; padding:14px; font-weight:800; background:linear-gradient(90deg, var(--accent), var(--ok)); }
+  .gbtn{
+    border:none; border-radius:14px; color:white; padding:14px; font-weight:800;
+    background:linear-gradient(90deg, var(--grad1), var(--grad2));
+    box-shadow:var(--shadow);
+  }
 
   .hidden{ display:none !important; }
 
+  /* Animations */
   @keyframes correctGrow{ 0%{transform:scale(1);opacity:1;}60%{transform:scale(1.2);opacity:.9;}100%{transform:scale(1);opacity:1;} }
-  @keyframes shake{ 0%{transform:translateX(0);}20%{-webkit-transform:translateX(-8px);transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0);} }
+  @keyframes shake{ 0%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0);} }
 
   button{ min-height:44px; }
 </style>
@@ -147,12 +188,12 @@
     </header>
 
     <div class="lives" id="livesRow" aria-label="Lives"></div>
-    <div class="levelbar"><div class="level" id="levelLabel">lvl one</div></div>
+    <div class="levelbar"><div class="level" id="levelLabel">lvl 1</div></div>
 
     <div class="countdown" aria-live="polite">
       <div class="cd-bar">
         <div id="cdFill" class="cd-fill"></div>
-        <div id="cdText" class="cd-text">30.0s</div>
+        <!-- numeric removed by request -->
       </div>
     </div>
 
@@ -221,7 +262,6 @@
   const livesRow   = document.getElementById('livesRow');
   const levelLabel = document.getElementById('levelLabel');
   const cdFill     = document.getElementById('cdFill');
-  const cdText     = document.getElementById('cdText');
   const answerRow  = document.getElementById('answerRow');
   const bankRow    = document.getElementById('bankRow');
   const shuffleBtn = document.getElementById('shuffleBtn');
@@ -243,10 +283,8 @@
   const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
   const randInt = n => Math.floor(Math.random()*n);
   function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=randInt(i+1); [a[i],a[j]]=[a[j],a[i]]; } }
-  const words1to19=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
-  const tensWords=["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
-  const numberToWords=n=> n<20?words1to19[n]:n<100?(tensWords[Math.floor(n/10)]+(n%10?`-${words1to19[n%10]}`:"")):String(n);
 
+  // Theme icons
   function setSun(){ themeIcon.innerHTML='<path d="M12 4.75a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 12 4.75Zm6.364 2.386a.75.75 0 0 1 1.06 1.06l-.354.354a.75.75 0 1 1-1.06-1.06l.354-.354ZM18.75 12a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75ZM6.99 7.49a.75.75 0 0 1-1.06 1.06l-.354-.354a.75.75 0 0 1 1.06-1.06l.354.354ZM12 7.5A4.5 4.5 0 1 1 7.5 12 4.505 4.505 0 0 1 12 7.5Zm0 9.75a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0v-.5a.75.75 0 0 1 .75-.75Zm-6.364-2.386a.75.75 0 1 1-1.06-1.06l.354-.354a.75.75 0 0 1 1.06 1.06l-.354.354ZM4.75 12a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5a.75.75 0 0 1 .75.75Zm12.26 3.45a.75.75 0 0 1 1.06 0l.354.354a.75.75 0 0 1-1.06 1.06l-.354-.354a.75.75 0 0 1 0-1.06Z"/>'; }
   function setMoon(){ themeIcon.innerHTML='<path d="M20.354 14.354a8.25 8.25 0 1 1-10.708-10.71 7 7 0 1 0 10.708 10.71Z"/>'; }
   function setTheme(t){ const r=document.documentElement; if(t==='dark'){ r.classList.add('dark'); setMoon(); } else { r.classList.remove('dark'); setSun(); } sessionStorage.setItem('jumbl-theme',t); }
@@ -267,7 +305,7 @@
       const toWords = t => t.split(/\r?\n/).map(s=>s.trim().toUpperCase()).filter(w=>/^[A-Z]{5}$/.test(w));
 
       ANSWER_POOL = toWords(ansText);
-      ANSWER_SET  = new Set(ANSWER_POOL);
+      ANSWER_SET  = new Set(ANSWERER_POOL = ANSWER_POOL); // ensure reference kept if needed
       ACCEPTED_SET= new Set(toWords(guessText));
 
       if(!ANSWER_POOL.length) throw new Error('answers.txt is empty');
@@ -300,7 +338,6 @@
   function tickWordTimer(){
     const now=performance.now(), total=COUNTDOWN_SECONDS*1000, remain=clamp(wordDeadlineAt-now,0,total);
     cdFill.style.width = `${(remain/total)*100}%`;
-    cdText.textContent = (remain/1000).toFixed(1)+'s';
     if(remain<=0) onWordTimeout();
   }
 
@@ -353,12 +390,13 @@
 
   // ===== Render =====
   function renderUI(){
-    // Lives
+    // Lives (boxes)
     livesRow.innerHTML='';
     for(let i=0;i<STARTING_LIVES;i++){
       const d=document.createElement('div'); d.className='life'+(i<lives?' on':''); livesRow.appendChild(d);
     }
-    levelLabel.textContent='lvl '+numberToWords(Math.max(1,level));
+    // Numerals for level
+    levelLabel.textContent='lvl '+Math.max(1,level);
 
     // Answer row
     answerRow.innerHTML='';
@@ -368,7 +406,7 @@
       t.textContent=current[i]?.ch??''; answerRow.appendChild(t);
     }
 
-    // Bank (no per-button listeners; use delegation)
+    // Bank (delegated events)
     bankRow.innerHTML='';
     bank.forEach((b,idx)=>{
       const btn=document.createElement('button');
@@ -380,7 +418,6 @@
   }
 
   // ===== Wiring (low-latency pointer events) =====
-  // Letter bank: single delegated handler, fires on pointerdown
   bankRow.addEventListener('pointerdown', (e)=>{
     const btn = e.target.closest('button');
     if(!btn || btn.disabled) return;
@@ -388,24 +425,12 @@
     if(Number.isInteger(idx)) handleLetterTap(bank[idx].ch, idx);
   }, {passive:true});
 
-  // Controls on pointerdown (immediate)
   shuffleBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); shuffleBank(); }, {passive:false});
   backBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); handleBackspace(); }, {passive:false});
   playBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); startGame(); }, {passive:false});
   againBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); gameOverModal.classList.remove('show'); startGame(); }, {passive:false});
   retryBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); loadWordLists(); }, {passive:false});
   themeBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); toggleTheme(); }, {passive:false});
-
-  // Optional keyboard (desktop)
-  document.addEventListener('keydown',(e)=>{
-    if([introModal, gameOverModal, fetchModal].some(m=>m.classList.contains('show'))) return;
-    const k=e.key.toUpperCase();
-    if(/^[A-Z]$/.test(k)){
-      const idx=bank.findIndex(b=>!b.used && b.ch===k);
-      if(idx!==-1) handleLetterTap(k, idx);
-    } else if(e.key==='Backspace'){ handleBackspace(); }
-    else if(e.key===' '){ e.preventDefault(); shuffleBank(); }
-  });
 
   // Theme boot
   setTheme(sessionStorage.getItem('jumbl-theme')
