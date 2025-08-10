@@ -9,8 +9,9 @@
   :root{
     --bg:#f7f7f9; --fg:#1f2328; --muted:#6a6f76;
     --tile:#ffffff; --tile-empty:#e9ebef;
-    /* Light: warm, softer 3-stop gradient */
-    --grad1:#FFB36C; --grad2:#FF7FA8; --grad3:#FF9AD6;
+    /* Light: warm, softer + balanced stops */
+    --grad1:#FFB36C; --grad2:#FF8CC2; --grad3:#FFA5E3;
+    --stop1:0%; --stop2:50%; --stop3:100%;
     --danger:#ff5c7a;
     --shadow:0 6px 20px rgba(0,0,0,.08);
     --radius:16px;
@@ -19,14 +20,15 @@
   .dark{
     --bg:#0f1115; --fg:#e6e7eb; --muted:#9aa1aa;
     --tile:#171a20; --tile-empty:#1f2430;
-    /* Dark: cozy periwinkle→aqua→mint */
+    /* Dark: periwinkle→aqua→mint, balanced */
     --grad1:#9AA9FF; --grad2:#6DD6C8; --grad3:#46E39C;
+    --stop1:0%; --stop2:50%; --stop3:100%;
     --danger:#ff6b88;
     --shadow:0 8px 24px rgba(0,0,0,.35);
     --sheet:#12161e;
   }
 
-  /* ---- Global + iOS older Safari compatibility ---- */
+  /* Global + iOS compatibility */
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html{ height:100%; width:100%; -webkit-text-size-adjust:100%; overflow-x:hidden; }
   body{
@@ -36,7 +38,8 @@
   }
 
   .app{
-    width:100%; max-width:600px; margin:0 auto;
+    width: min(var(--vw, 100vw), 600px);   /* lock to measured viewport width */
+    margin: 0 auto;
     min-height:100%;
     padding:
       calc(env(safe-area-inset-top,0px) + 16px)
@@ -50,53 +53,57 @@
     .app{ min-height:100dvh; }
   }
 
-  /* ---- Header ---- */
+  /* Header */
   header{
     display:grid; grid-template-columns: 1fr auto 1fr;
-    align-items:center; gap:8px; padding-block:6px;
+    align-items:center; gap:8px; padding-block:4px;
   }
   .title{
     grid-column:2; text-align:center;
     font-weight:900; letter-spacing:1.4px;
-    font-size:clamp(36px, 9vw, 52px); /* ~2x bigger */
+    font-size:clamp(44px, 12vw, 64px);  /* much bigger */
     line-height:1.05;
-    margin:6px 0 10px;
-    /* Gradient text */
-    background:linear-gradient(90deg, var(--grad1), var(--grad2), var(--grad3));
+    margin-top:10px; margin-bottom:16px; /* extra breathing room */
+    background:linear-gradient(90deg,
+      var(--grad1) var(--stop1),
+      var(--grad2) var(--stop2),
+      var(--grad3) var(--stop3));
     -webkit-background-clip:text; background-clip:text;
     -webkit-text-fill-color:transparent;
   }
   .theme-toggle{
     justify-self:end; border:none;
-    background:linear-gradient(90deg, var(--grad1), var(--grad2), var(--grad3));
+    background:linear-gradient(90deg,
+      var(--grad1) var(--stop1),
+      var(--grad2) var(--stop2),
+      var(--grad3) var(--stop3));
     padding:8px; border-radius:999px;
     box-shadow:var(--shadow);
     touch-action: manipulation;
   }
-  .theme-toggle svg{
-    width:28px; height:28px; display:block; color:#fff;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,.12));
-  }
+  .theme-toggle svg{ width:28px; height:28px; display:block; color:#fff; }
 
-  /* ---- Lives: rounded boxes with gradient when active ---- */
+  /* Lives: rounded boxes */
   .lives{ display:flex; justify-content:center; gap:8px; }
   .life{
     width:16px; height:16px; border-radius:10px;
     background:var(--tile-empty); box-shadow:var(--shadow);
   }
-  .life.on{ background:linear-gradient(90deg, var(--grad1), var(--grad2), var(--grad3)); }
-
-  /* ---- Level (numerals) ---- */
-  .levelbar{
-    display:flex; align-items:center; justify-content:flex-start;
-    font-size:14px; color:var(--muted); padding:0 2px;
+  .life.on{
+    background:linear-gradient(90deg,
+      var(--grad1) var(--stop1),
+      var(--grad2) var(--stop2),
+      var(--grad3) var(--stop3));
   }
 
-  /* ---- Countdown bar (no numbers) ---- */
+  /* Level (numerals) */
+  .levelbar{ display:flex; align-items:center; justify-content:flex-start; font-size:14px; color:var(--muted); padding:0 2px; }
+
+  /* Countdown (slimmer card, no excess space) */
   .countdown{
     background:var(--tile); border-radius:var(--radius);
     box-shadow:var(--shadow);
-    padding:12px 12px 14px;
+    padding:8px 10px;  /* tighter */
   }
   .cd-bar{
     position:relative; height:16px; border-radius:12px; overflow:hidden;
@@ -104,16 +111,16 @@
   }
   .cd-fill{
     position:absolute; inset:0 auto 0 0; width:0%;
-    background:linear-gradient(90deg, var(--grad1), var(--grad2), var(--grad3));
+    background:linear-gradient(90deg,
+      var(--grad1) var(--stop1),
+      var(--grad2) var(--stop2),
+      var(--grad3) var(--stop3));
     transition: width 100ms linear; will-change: width;
-    filter: saturate(.9) brightness(1.02); /* softer */
+    filter: saturate(.9) brightness(1.02); /* gentle */
   }
 
-  /* ---- Tiles + Bank ---- */
-  .answer-row{
-    display:grid; grid-template-columns:repeat(5,1fr);
-    gap:8px; margin-top:8px;
-  }
+  /* Tiles + Bank */
+  .answer-row{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:8px; }
   .tile{
     aspect-ratio:1/1; display:grid; place-items:center;
     border-radius:14px; background:var(--tile-empty);
@@ -127,10 +134,7 @@
   .tile.correct{ animation: correctGrow 240ms ease; }
   .answer-row.shake{ animation: shake 260ms ease; }
 
-  .bank{
-    display:grid; grid-template-columns:repeat(5,1fr);
-    gap:10px; margin-top:6px;
-  }
+  .bank{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:6px; }
   .bank button{
     aspect-ratio:1/1; border:none; border-radius:14px;
     background:var(--tile); color:var(--fg);
@@ -138,11 +142,9 @@
     box-shadow:var(--shadow);
     touch-action: manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
   }
-  .bank button:disabled{ opacity:.35; transform:scale(.97); }
+  .bank button:disabled{ opacity:.35; } /* removed transform scale to keep sizes identical */
 
-  .controls{
-    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:2px;
-  }
+  .controls{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:2px; }
   .controls button{
     border:none; border-radius:14px; background:var(--tile); color:var(--fg);
     font-size:clamp(16px,4.5vw,18px); font-weight:800; box-shadow:var(--shadow);
@@ -150,7 +152,7 @@
     touch-action: manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
   }
 
-  /* ---- Modals (buttons share gradient) ---- */
+  /* Modals */
   .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; padding:24px; z-index:1000; }
   .modal.show{ display:flex; }
   .overlay{ position:absolute; inset:0; background:rgba(0,0,0,.35); backdrop-filter: blur(2px); }
@@ -163,7 +165,10 @@
   }
   .sheet h2{
     margin:0; font-size:22px;
-    background:linear-gradient(90deg, var(--grad1), var(--grad2), var(--grad3));
+    background:linear-gradient(90deg,
+      var(--grad1) var(--stop1),
+      var(--grad2) var(--stop2),
+      var(--grad3) var(--stop3));
     -webkit-background-clip:text; background-clip:text;
     -webkit-text-fill-color:transparent;
   }
@@ -171,13 +176,16 @@
   .sheet .actions{ display:grid; gap:8px; }
   .gbtn{
     border:none; border-radius:14px; color:white; padding:14px; font-weight:800;
-    background:linear-gradient(90deg, var(--grad1), var(--grad2), var(--grad3));
+    background:linear-gradient(90deg,
+      var(--grad1) var(--stop1),
+      var(--grad2) var(--stop2),
+      var(--grad3) var(--stop3));
     box-shadow:var(--shadow); filter:saturate(.9) brightness(1.02);
   }
 
   .hidden{ display:none !important; }
 
-  /* ---- Animations ---- */
+  /* Animations */
   @keyframes correctGrow{ 0%{transform:scale(1);opacity:1;}60%{transform:scale(1.2);opacity:.9;}100%{transform:scale(1);opacity:1;} }
   @keyframes shake{ 0%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0);} }
 
@@ -190,6 +198,7 @@
       <div></div>
       <div class="title">JUMBL</div>
       <button id="themeBtn" class="theme-toggle" aria-label="Toggle theme">
+        <!-- crisp sun/moon swapped by JS -->
         <svg id="themeIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"></svg>
       </button>
     </header>
@@ -288,22 +297,27 @@
   const randInt = n => Math.floor(Math.random()*n);
   function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=randInt(i+1); [a[i],a[j]]=[a[j],a[i]]; } }
 
-  // Theme icons (clean sun / crescent)
+  // Viewport width lock for iOS 18.1.1 odd zoom
+  function setVwVar(){
+    const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    document.documentElement.style.setProperty('--vw', vw + 'px');
+  }
+  window.addEventListener('resize', setVwVar);
+  window.addEventListener('orientationchange', setVwVar);
+  window.addEventListener('pageshow', setVwVar);
+  setVwVar();
+
+  // Theme icons: crisp sun (8 dots) / crescent moon
   function setSun(){
     themeIcon.innerHTML = `
-      <path d="M12 5.25a.75.75 0 0 1 .75-.75h.5a.75.75 0 1 1 0 1.5h-.5A.75.75 0 0 1 12 5.25Z"/>
-      <path d="M7.53 6.47a.75.75 0 0 1 1.06 0l.35.35a.75.75 0 1 1-1.06 1.06l-.35-.35a.75.75 0 0 1 0-1.06Z"/>
-      <path d="M5 11.25a.75.75 0 0 1 .75-.75h.5a.75.75 0 1 1 0 1.5h-.5A.75.75 0 0 1 5 11.25Z"/>
-      <path d="M7.53 16.97a.75.75 0 0 1 0-1.06l.35-.35a.75.75 0 1 1 1.06 1.06l-.35.35a.75.75 0 0 1-1.06 0Z"/>
-      <circle cx="12" cy="12" r="4.25"/>
-      <path d="M18.75 11.25h.5a.75.75 0 1 1 0 1.5h-.5a.75.75 0 1 1 0-1.5Z"/>
-      <path d="M16.12 6.82a.75.75 0 0 1 1.06 0l.35.35a.75.75 0 1 1-1.06 1.06l-.35-.35a.75.75 0 0 1 0-1.06Z"/>
-      <path d="M16.12 17.18a.75.75 0 0 1 0-1.06l.35-.35a.75.75 0 1 1 1.06 1.06l-.35.35a.75.75 0 0 1-1.06 0Z"/>
+      <circle cx="12" cy="12" r="4"/>
+      <circle cx="12" cy="3.5" r="1.1"/><circle cx="16.364" cy="5.636" r="1.1"/>
+      <circle cx="18.5" cy="12" r="1.1"/><circle cx="16.364" cy="18.364" r="1.1"/>
+      <circle cx="12" cy="20.5" r="1.1"/><circle cx="7.636" cy="18.364" r="1.1"/>
+      <circle cx="5.5" cy="12" r="1.1"/><circle cx="7.636" cy="5.636" r="1.1"/>
     `;
   }
-  function setMoon(){
-    themeIcon.innerHTML = '<path d="M20.354 14.354a8.25 8.25 0 1 1-10.708-10.71 7 7 0 1 0 10.708 10.71Z"/>';
-  }
+  function setMoon(){ themeIcon.innerHTML = '<path d="M20.354 14.354a8.25 8.25 0 1 1-10.708-10.71 7 7 0 1 0 10.708 10.71Z"/>'; }
   function setTheme(t){
     const r=document.documentElement;
     if(t==='dark'){ r.classList.add('dark'); setMoon(); }
@@ -334,7 +348,7 @@
       if(!ACCEPTED_SET.size)  throw new Error('guesses.txt is empty');
 
       fetchStatus.textContent = `Loaded ${ANSWER_POOL.length} answers, ${ACCEPTED_SET.size} guesses.`;
-      await sleep(250);
+      await sleep(200);
       fetchModal.classList.remove('show');
       introModal.classList.add('show');
     }catch(err){
@@ -426,7 +440,7 @@
     for(let i=0;i<STARTING_LIVES;i++){
       const d=document.createElement('div'); d.className='life'+(i<lives?' on':''); livesRow.appendChild(d);
     }
-    // Numerals for level
+    // Numeral level
     levelLabel.textContent='lvl '+Math.max(1,level);
 
     // Answer row
@@ -448,7 +462,7 @@
     });
   }
 
-  // ===== Wiring (low-latency pointer events) =====
+  // ===== Wiring (fast pointer events) =====
   bankRow.addEventListener('pointerdown', (e)=>{
     const btn = e.target.closest('button');
     if(!btn || btn.disabled) return;
@@ -463,7 +477,7 @@
   retryBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); loadWordLists(); }, {passive:false});
   themeBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); toggleTheme(); }, {passive:false});
 
-  // Theme boot (gradient applies automatically)
+  // Theme boot
   setTheme(sessionStorage.getItem('jumbl-theme')
     || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'));
 
