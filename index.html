@@ -157,23 +157,6 @@
   .gbtn{ border:none; border-radius:14px; color:white; padding:14px; font-weight:800; box-shadow:var(--shadow); }
 
   @keyframes shake{ 0%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0);} }
-  /* Correct-guess celebration */
-@keyframes popWiggle {
-  0%   { transform: scale(1) rotate(0deg); }
-  20%  { transform: scale(1.12) rotate(0.6deg); }
-  40%  { transform: scale(1.08) rotate(-0.6deg); }
-  60%  { transform: scale(1.10) rotate(0.4deg); }
-  80%  { transform: scale(1.04) rotate(-0.3deg); }
-  100% { transform: scale(1) rotate(0deg); }
-}
-
-.answer-row.celebrate .tile {
-  /* use the existing per-tile --i to stagger */
-  animation: popWiggle 520ms cubic-bezier(.2,.8,.2,1) both;
-  animation-delay: calc(var(--i) * 45ms);
-  will-change: transform;
-}
-
   button{ min-height:44px; }
 </style>
 </head>
@@ -401,21 +384,11 @@
     if(isAnimating) return;
     const upper = word.toUpperCase();
     const isValid = ACCEPTED_SET.has(upper) || ANSWER_SET.has(upper);
-    if (isValid) {
-  isAnimating = true;
-
-  // play the pop+wiggle on the 5 tiles before refilling the timer / advancing
-  answerRow.classList.add('celebrate');
-
-  // 520ms base + max stagger (4 * 45ms) ≈ 700ms
-  await sleep(720);
-
-  answerRow.classList.remove('celebrate');
-  isAnimating = false;
-
-  nextWord(true);
-  renderUI();
-}
+    if(isValid){
+      isAnimating=true;
+      await sleep(180);
+      isAnimating=false;
+      nextWord(true); renderUI();
     }else{
       isAnimating=true;
       answerRow.classList.add('shake'); await sleep(240); answerRow.classList.remove('shake');
