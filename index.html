@@ -186,7 +186,7 @@
     </header>
 
     <div class="lives" id="livesRow" aria-label="Lives"></div>
-    <div class="levelbar"><div class="level" id="levelLabel">lvl 1</div></div>
+    <div class="levelbar"><div class="level" id="levelLabel">Level 1</div></div>
 
     <div class="countdown" aria-live="polite">
       <div class="cd-bar"><div id="cdFill" class="cd-fill grad-bg"></div></div>
@@ -208,11 +208,13 @@
   <div id="introModal" class="modal">
     <div class="overlay"></div>
     <div class="sheet">
-      <h2 class="grad-text">How to play</h2>
+      <h2 class="grad-text">RULES</h2>
       <div class="content">
-        Make any valid 5-letter word from the shuffled letters.<br/>
-        A correct word advances the level and resets the timer.<br/><br/>
-        <strong>25s per word • 3 lives</strong>
+        Use the jumbled letters to make a real 5-letter word.<br/>
+Beat the clock to level up and refill the timer.<br/>
+If the timer hits zero, you lose a life (fresh letters, same level).<br/><br/>
+<strong>25 seconds per word • 3 lives</strong><br/>
+Tip: ⤮ Shuffle for inspiration • ⌫ Undo a letter
       </div>
       <div class="actions"><button id="playBtn" class="gbtn grad-bg">Play</button></div>
     </div>
