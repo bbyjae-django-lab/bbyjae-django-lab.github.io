@@ -9,9 +9,9 @@
   :root{
     --bg:#f7f7f9; --fg:#1f2328; --muted:#6a6f76;
     --tile:#ffffff; --tile-empty:#e9ebef;
-    /* Light: warm, softer + balanced stops */
-    --grad1:#FFB36C; --grad2:#FF8CC2; --grad3:#FFA5E3;
-    --stop1:0%; --stop2:50%; --stop3:100%;
+    /* Light: balanced, softer 3-stop gradient */
+    --grad1:#FFB36C; --grad2:#FF8FC6; --grad3:#FFA6E6;
+    --stop1:0%; --stop2:42%; --stop3:100%;
     --danger:#ff5c7a;
     --shadow:0 6px 20px rgba(0,0,0,.08);
     --radius:16px;
@@ -21,8 +21,8 @@
     --bg:#0f1115; --fg:#e6e7eb; --muted:#9aa1aa;
     --tile:#171a20; --tile-empty:#1f2430;
     /* Dark: periwinkle→aqua→mint, balanced */
-    --grad1:#9AA9FF; --grad2:#6DD6C8; --grad3:#46E39C;
-    --stop1:0%; --stop2:50%; --stop3:100%;
+    --grad1:#9AA9FF; --grad2:#71D3CF; --grad3:#46E39C;
+    --stop1:0%; --stop2:45%; --stop3:100%;
     --danger:#ff6b88;
     --shadow:0 8px 24px rgba(0,0,0,.35);
     --sheet:#12161e;
@@ -38,7 +38,7 @@
   }
 
   .app{
-    width: min(var(--vw, 100vw), 600px);   /* lock to measured viewport width */
+    width: min(var(--vw, 100vw), 600px);
     margin: 0 auto;
     min-height:100%;
     padding:
@@ -46,12 +46,11 @@
       12px
       calc(env(safe-area-inset-bottom,0px) + 18px);
     display:grid;
-    grid-template-rows:auto auto auto 1fr auto auto;
+    /* countdown no longer gets the stretchy row */
+    grid-template-rows:auto auto auto auto auto auto 1fr;
     gap:12px;
   }
-  @supports (min-height: 100dvh){
-    .app{ min-height:100dvh; }
-  }
+  @supports (min-height: 100dvh){ .app{ min-height:100dvh; } }
 
   /* Header */
   header{
@@ -61,9 +60,9 @@
   .title{
     grid-column:2; text-align:center;
     font-weight:900; letter-spacing:1.4px;
-    font-size:clamp(44px, 12vw, 64px);  /* much bigger */
+    font-size:clamp(44px, 12vw, 64px);
     line-height:1.05;
-    margin-top:10px; margin-bottom:16px; /* extra breathing room */
+    margin-top:10px; margin-bottom:16px;
     background:linear-gradient(90deg,
       var(--grad1) var(--stop1),
       var(--grad2) var(--stop2),
@@ -73,84 +72,59 @@
   }
   .theme-toggle{
     justify-self:end; border:none;
-    background:linear-gradient(90deg,
-      var(--grad1) var(--stop1),
-      var(--grad2) var(--stop2),
-      var(--grad3) var(--stop3));
-    padding:8px; border-radius:999px;
-    box-shadow:var(--shadow);
-    touch-action: manipulation;
+    background:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3));
+    padding:8px; border-radius:999px; box-shadow:var(--shadow); touch-action: manipulation;
   }
   .theme-toggle svg{ width:28px; height:28px; display:block; color:#fff; }
 
   /* Lives: rounded boxes */
   .lives{ display:flex; justify-content:center; gap:8px; }
-  .life{
-    width:16px; height:16px; border-radius:10px;
-    background:var(--tile-empty); box-shadow:var(--shadow);
-  }
-  .life.on{
-    background:linear-gradient(90deg,
-      var(--grad1) var(--stop1),
-      var(--grad2) var(--stop2),
-      var(--grad3) var(--stop3));
-  }
+  .life{ width:16px; height:16px; border-radius:10px; background:var(--tile-empty); box-shadow:var(--shadow); }
+  .life.on{ background:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3)); }
 
   /* Level (numerals) */
   .levelbar{ display:flex; align-items:center; justify-content:flex-start; font-size:14px; color:var(--muted); padding:0 2px; }
 
-  /* Countdown (slimmer card, no excess space) */
-  .countdown{
-    background:var(--tile); border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    padding:8px 10px;  /* tighter */
-  }
-  .cd-bar{
-    position:relative; height:16px; border-radius:12px; overflow:hidden;
-    background:var(--tile-empty);
-  }
+  /* Countdown — tight, no extra space */
+  .countdown{ background:var(--tile); border-radius:var(--radius); box-shadow:var(--shadow); padding:8px 10px; }
+  .cd-bar{ position:relative; height:16px; border-radius:12px; overflow:hidden; background:var(--tile-empty); }
   .cd-fill{
     position:absolute; inset:0 auto 0 0; width:0%;
-    background:linear-gradient(90deg,
-      var(--grad1) var(--stop1),
-      var(--grad2) var(--stop2),
-      var(--grad3) var(--stop3));
-    transition: width 100ms linear; will-change: width;
-    filter: saturate(.9) brightness(1.02); /* gentle */
+    background:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3));
+    transition: width 100ms linear; will-change: width; filter:saturate(.9) brightness(1.02);
   }
 
   /* Tiles + Bank */
-  .answer-row{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:8px; }
+  .answer-row{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:6px; }
   .tile{
     aspect-ratio:1/1; display:grid; place-items:center;
     border-radius:14px; background:var(--tile-empty);
     color:var(--fg); font-size:clamp(22px,7vw,30px);
     font-weight:800; letter-spacing:1px; box-shadow:var(--shadow);
     transition: background .2s ease, transform .2s ease, opacity .2s ease;
-    will-change: transform, opacity;
-    user-select:none; -webkit-user-select:none;
+    will-change: transform, opacity; user-select:none; -webkit-user-select:none;
   }
   .tile.filled{ background:var(--tile); }
   .tile.correct{ animation: correctGrow 240ms ease; }
   .answer-row.shake{ animation: shake 260ms ease; }
 
-  .bank{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:6px; }
+  .bank{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:2px; }
   .bank button{
-    aspect-ratio:1/1; border:none; border-radius:14px;
-    background:var(--tile); color:var(--fg);
-    font-size:clamp(20px,7vw,28px); font-weight:900; letter-spacing:1px;
-    box-shadow:var(--shadow);
+    aspect-ratio:1/1; border:none; border-radius:14px; background:var(--tile); color:var(--fg);
+    font-size:clamp(20px,7vw,28px); font-weight:900; letter-spacing:1px; box-shadow:var(--shadow);
     touch-action: manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
   }
-  .bank button:disabled{ opacity:.35; } /* removed transform scale to keep sizes identical */
+  .bank button:disabled{ opacity:.35; } /* keep size identical */
 
   .controls{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:2px; }
   .controls button{
     border:none; border-radius:14px; background:var(--tile); color:var(--fg);
     font-size:clamp(16px,4.5vw,18px); font-weight:800; box-shadow:var(--shadow);
-    padding:16px; min-height:64px;
-    touch-action: manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
+    padding:16px; min-height:64px; touch-action: manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
   }
+
+  /* Spacer pushes leftover space below buttons (not under timer) */
+  .spacer{ min-height:1px; }
 
   /* Modals */
   .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; padding:24px; z-index:1000; }
@@ -165,21 +139,14 @@
   }
   .sheet h2{
     margin:0; font-size:22px;
-    background:linear-gradient(90deg,
-      var(--grad1) var(--stop1),
-      var(--grad2) var(--stop2),
-      var(--grad3) var(--stop3));
-    -webkit-background-clip:text; background-clip:text;
-    -webkit-text-fill-color:transparent;
+    background:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
   }
   .sheet .content{ overflow:auto; -webkit-overflow-scrolling:touch; font-size:15px; color:var(--muted); line-height:1.5; }
   .sheet .actions{ display:grid; gap:8px; }
   .gbtn{
     border:none; border-radius:14px; color:white; padding:14px; font-weight:800;
-    background:linear-gradient(90deg,
-      var(--grad1) var(--stop1),
-      var(--grad2) var(--stop2),
-      var(--grad3) var(--stop3));
+    background:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3));
     box-shadow:var(--shadow); filter:saturate(.9) brightness(1.02);
   }
 
@@ -198,7 +165,6 @@
       <div></div>
       <div class="title">JUMBL</div>
       <button id="themeBtn" class="theme-toggle" aria-label="Toggle theme">
-        <!-- crisp sun/moon swapped by JS -->
         <svg id="themeIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"></svg>
       </button>
     </header>
@@ -217,6 +183,8 @@
       <button id="shuffleBtn" aria-label="Shuffle letters">shuffle</button>
       <button id="backBtn" aria-label="Backspace">⌫</button>
     </div>
+
+    <div class="spacer"></div>
   </div>
 
   <!-- Intro Modal -->
@@ -260,9 +228,9 @@
   const STARTING_LIVES   = 3;
 
   // ===== State =====
-  let ACCEPTED_SET = new Set();     // guesses.txt
-  let ANSWER_POOL  = [];            // answers.txt (array)
-  let ANSWER_SET   = new Set();     // answers.txt (set)
+  let ACCEPTED_SET = new Set();
+  let ANSWER_POOL  = [];
+  let ANSWER_SET   = new Set();
   let bank = [];                    // [{ch, used}]
   let current = [];                 // [{ch, bankIndex}]
   let lives = STARTING_LIVES;
@@ -279,12 +247,10 @@
   const bankRow    = document.getElementById('bankRow');
   const shuffleBtn = document.getElementById('shuffleBtn');
   const backBtn    = document.getElementById('backBtn');
-
   const introModal   = document.getElementById('introModal');
   const playBtn      = document.getElementById('playBtn');
   const gameOverModal= document.getElementById('gameOverModal');
   const againBtn     = document.getElementById('againBtn');
-
   const fetchModal   = document.getElementById('fetchModal');
   const fetchStatus  = document.getElementById('fetchStatus');
   const retryBtn     = document.getElementById('retryBtn');
@@ -297,24 +263,34 @@
   const randInt = n => Math.floor(Math.random()*n);
   function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=randInt(i+1); [a[i],a[j]]=[a[j],a[i]]; } }
 
-  // Viewport width lock for iOS 18.1.1 odd zoom
+  // Visual viewport width lock (fixes iOS zoom mismatch)
   function setVwVar(){
-    const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const vv = window.visualViewport;
+    const vw = vv ? vv.width : Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     document.documentElement.style.setProperty('--vw', vw + 'px');
   }
-  window.addEventListener('resize', setVwVar);
-  window.addEventListener('orientationchange', setVwVar);
-  window.addEventListener('pageshow', setVwVar);
   setVwVar();
+  if (window.visualViewport){
+    visualViewport.addEventListener('resize', setVwVar);
+    visualViewport.addEventListener('scroll', setVwVar);
+  }
+  window.addEventListener('orientationchange', setVwVar);
+  window.addEventListener('resize', setVwVar);
+  window.addEventListener('pageshow', setVwVar);
 
-  // Theme icons: crisp sun (8 dots) / crescent moon
+  // Icons: crisp sun (dots on a true circle) / crescent moon
   function setSun(){
     themeIcon.innerHTML = `
       <circle cx="12" cy="12" r="4"/>
-      <circle cx="12" cy="3.5" r="1.1"/><circle cx="16.364" cy="5.636" r="1.1"/>
-      <circle cx="18.5" cy="12" r="1.1"/><circle cx="16.364" cy="18.364" r="1.1"/>
-      <circle cx="12" cy="20.5" r="1.1"/><circle cx="7.636" cy="18.364" r="1.1"/>
-      <circle cx="5.5" cy="12" r="1.1"/><circle cx="7.636" cy="5.636" r="1.1"/>
+      <!-- ring radius = 8, dots @ 45° increments -->
+      <circle cx="12" cy="4" r="1.1"/><!-- top -->
+      <circle cx="17.657" cy="6.343" r="1.1"/><!-- top-right -->
+      <circle cx="20" cy="12" r="1.1"/><!-- right -->
+      <circle cx="17.657" cy="17.657" r="1.1"/><!-- bottom-right -->
+      <circle cx="12" cy="20" r="1.1"/><!-- bottom -->
+      <circle cx="6.343" cy="17.657" r="1.1"/><!-- bottom-left -->
+      <circle cx="4" cy="12" r="1.1"/><!-- left -->
+      <circle cx="6.343" cy="6.343" r="1.1"/><!-- top-left -->
     `;
   }
   function setMoon(){ themeIcon.innerHTML = '<path d="M20.354 14.354a8.25 8.25 0 1 1-10.708-10.71 7 7 0 1 0 10.708 10.71Z"/>'; }
