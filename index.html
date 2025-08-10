@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Jumbl</title>
-  <!-- Lato (700/900) -->
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&display=swap" rel="stylesheet">
   <style>
     :root{
@@ -12,7 +11,7 @@
       --fg: #111;
       --muted: #6a6a6a;
       --tile: #fff;
-      --tile-border: #d9d9de;
+      --tile-border: #d7d7dc;
       --tile-locked: #e6f0ff;
       --accent: #2b7cff;
       --accent-weak:#e9f1ff;
@@ -22,6 +21,19 @@
       --btn:#111;
       --btn-fg:#fff;
       --shadow: 0 6px 16px rgba(0,0,0,0.08);
+
+      /* sizing */
+      --title-size: 30px;
+      --status-size: 15px;
+      --tile-radius: 14px;
+      --tile-gap: 8px;         /* tighter */
+      --key-gap: 8px;          /* tighter */
+      --control-h: 60px;       /* larger */
+      --outer-radius: 18px;
+      --outer-border: 3px;     /* thicker border around game area */
+      --outer-pad-top: 26px;   /* bigger top buffer */
+      --outer-pad-x: 14px;
+      --outer-pad-bot: 18px;
     }
     [data-theme="dark"]{
       --bg: #0e0f12;
@@ -37,39 +49,44 @@
       --life-off:#3a3e46;
       --btn:#f2f3f5;
       --btn-fg:#0e0f12;
-      --shadow: 0 8px 18px rgba(0,0,0,0.3);
+      --shadow: 0 8px 18px rgba(0,0,0,0.32);
     }
 
     html,body{height:100%;}
     body{
       margin:0;
-      font-family: "Lato", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--fg);
+      font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      background: var(--bg); color: var(--fg);
       -webkit-tap-highlight-color: transparent;
     }
 
-    .wrap{
+    /* Outer game frame (thicker border, rounded) */
+    .frame{
       min-height:100%;
-      display:flex;
-      flex-direction:column;
-      padding: env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
-      gap: 10px;
-      max-width: 560px;
-      margin: 0 auto;
+      display:flex; flex-direction:column;
+      padding: calc(env(safe-area-inset-top) + var(--outer-pad-top))
+               var(--outer-pad-x)
+               calc(env(safe-area-inset-bottom) + var(--outer-pad-bot));
+      max-width: 560px; margin: 0 auto;
+      border: var(--outer-border) solid var(--tile-border);
+      border-radius: var(--outer-radius);
+      box-sizing: border-box;
     }
 
+    /* Header is visually “transparent”: no band color; the page bg shows through */
     header{
       display:flex; align-items:center; justify-content:space-between;
-      padding: 6px 4px 2px;
+      padding: 0 2px;
     }
     .title{
-      font-weight:900; letter-spacing:0.5px; font-size: 22px;
+      font-weight:900; letter-spacing:0.6px; font-size: var(--title-size);
+      line-height: 1.1;
+      margin: 0 0 2px 0;
     }
 
-    /* Theme switch (single icon in knob) */
+    /* Theme switch */
     .theme{
-      --w: 56px; --h: 28px; --pad: 3px;
+      --w: 64px; --h: 32px; --pad: 3px;   /* slightly larger */
       width: var(--w); height: var(--h); border-radius: 999px; position: relative;
       background: var(--tile); border:1px solid var(--tile-border); box-shadow: var(--shadow);
       cursor: pointer; display:flex; align-items:center; padding: var(--pad);
@@ -86,30 +103,25 @@
       overflow:hidden;
     }
     [data-theme="dark"] .theme .knob{ transform: translateX(calc(var(--w) - var(--h))); background: linear-gradient(180deg,#23262d,#1a1d23);}
-    .theme .icon{
-      width: 16px; height:16px; display:block;
-      mask-size: cover; -webkit-mask-size: cover;
-      background: #111;
-    }
+    .theme .icon{ width:18px; height:18px; display:block; mask-size: cover; -webkit-mask-size: cover; background:#111; }
     [data-theme="dark"] .theme .icon{ background:#f2f3f5; }
-    /* Sun / Moon via CSS masks (solid shapes) */
     .icon.sun{
-      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="%23000"><circle cx="12" cy="12" r="4"/><path d="M12 1v3M12 20v3M3 12H0M24 12h-3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M19.8 4.2l-2.1 2.1M6.3 17.7l-2.1 2.1"/></g></svg>') no-repeat 50% 50%;
-      -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="%23000"><circle cx="12" cy="12" r="4"/><path d="M12 1v3M12 20v3M3 12H0M24 12h-3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M19.8 4.2l-2.1 2.1M6.3 17.7l-2.1 2.1"/></g></svg>') no-repeat 50% 50%;
+      mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="%23000"><circle cx="12" cy="12" r="4"/><path d="M12 1v3M12 20v3M3 12H0M24 12h-3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M19.8 4.2l-2.1 2.1M6.3 17.7l-2.1 2.1"/></g></svg>') no-repeat 50% 50%;
+      -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="%23000"><circle cx="12" cy="12" r="4"/><path d="M12 1v3M12 20v3M3 12H0M24 12h-3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M19.8 4.2l-2.1 2.1M6.3 17.7l-2.1 2.1"/></g></svg>') no-repeat 50% 50%;
     }
     .icon.moon{
-      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M21 13.5A9 9 0 0 1 10.5 3a8 8 0 1 0 10.5 10.5Z"/></svg>') no-repeat 50% 50%;
-      -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M21 13.5A9 9 0 0 1 10.5 3a8 8 0 1 0 10.5 10.5Z"/></svg>') no-repeat 50% 50%;
+      mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M21 13.5A9 9 0 0 1 10.5 3a8 8 0 1 0 10.5 10.5Z"/></svg>') no-repeat 50% 50%;
+      -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M21 13.5A9 9 0 0 1 10.5 3a8 8 0 1 0 10.5 10.5Z"/></svg>') no-repeat 50% 50%;
     }
 
-    /* Status bar */
+    /* Status bar (slightly larger) */
     .status{
       display:grid; grid-template-columns: 1fr auto 1fr; align-items:center;
-      gap: 8px; padding: 6px 2px 2px;
-      font-weight:700; font-size: 14px;
+      gap:10px; padding: 6px 2px 10px;
+      font-weight:700; font-size: var(--status-size);
     }
-    .lives{ display:flex; gap:8px; align-items:center;}
-    .dot{ width:10px; height:10px; border-radius:50%; background: var(--life-on); transform-origin:center; }
+    .lives{ display:flex; gap:10px; align-items:center;}
+    .dot{ width:12px; height:12px; border-radius:50%; background: var(--life-on); transform-origin:center; }
     .dot.off{ background: var(--life-off); opacity:0.6; }
     .dot.pop{ animation: pop 340ms ease; }
     @keyframes pop {
@@ -119,54 +131,18 @@
       100%{ transform: scale(0); opacity:0; }
     }
 
-    .mode{
-      display:flex; align-items:center; gap:8px; justify-self:center; color: var(--muted);
-    }
+    .mode{ display:flex; align-items:center; gap:10px; justify-self:center; color: var(--muted);}
     .checkbox{
-      width:18px; height:18px; border:2px solid var(--muted); border-radius:3px; display:grid; place-items:center; font-size:14px; line-height:0;
+      width:20px; height:20px; border:2px solid var(--muted); border-radius:4px; display:grid; place-items:center; font-size:15px; line-height:0;
       cursor:pointer; user-select:none;
     }
     .checkbox.on{ border-color: var(--accent); color: var(--accent); }
     .timer{ justify-self:end; font-variant-numeric: tabular-nums; }
 
     /* Board */
-    .board{ display:flex; flex-direction:column; gap:12px; margin-top: 8px; }
-    .answer{
-      display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; padding: 4px;
-    }
-    .tile{
-      aspect-ratio: 1 / 1;
-      border: 2px solid var(--tile-border);
-      background: var(--tile);
-      border-radius: 12px;
-      display:grid; place-items:center;
-      font-size: clamp(28px, 9vw, 36px);
-      font-weight:900;
-      letter-spacing: 1px;
-      position:relative; overflow:hidden;
-      box-shadow: var(--shadow);
-    }
-    .tile.lock{
-      border-color: var(--accent);
-      background: linear-gradient(180deg, var(--tile-locked), var(--tile));
-    }
-    .tile .flash{
-      position:absolute; inset:0; background: rgba(127, 159, 255, 0.18);
-      opacity:0; transform: scale(0.94);
-      pointer-events:none;
-    }
-    .tile.flash-on .flash{
-      animation: flash 180ms ease;
-    }
-    @keyframes flash{
-      from{ opacity:0.5; transform: scale(1); }
-      to{ opacity:0; transform: scale(0.92); }
-    }
+    .board{ display:flex; flex-direction:column; gap:12px; margin-top: 2px; }
 
-    .row{
-      display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; padding: 4px;
-      transform-origin:center;
-    }
+    .row{ display:grid; grid-template-columns: repeat(5, 1fr); gap: var(--tile-gap); padding: 2px; transform-origin:center; }
     .row.shake{ animation: shake 300ms ease; }
     @keyframes shake{
       0%,100%{ transform: translateX(0); }
@@ -176,35 +152,50 @@
       80%{ transform: translateX(4px); }
     }
 
-    /* Keys (letter bank) */
-    .keys{
-      display:grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 4px;
-    }
-    .key{
-      aspect-ratio:1 / 1; border-radius: 12px;
-      background: var(--tile); border: 2px solid var(--tile-border);
+    .tile{
+      aspect-ratio: 1/1;
+      border: 2.5px solid var(--tile-border);
+      background: var(--tile);
+      border-radius: var(--tile-radius);
       display:grid; place-items:center;
-      font-weight:900; font-size: clamp(22px, 7.4vw, 28px);
+      font-size: clamp(32px, 10.5vw, 40px);    /* bigger */
+      font-weight:900;
       letter-spacing: 1px;
-      cursor:pointer; user-select:none;
-      touch-action: manipulation;
+      position:relative; overflow:hidden;
+      box-shadow: var(--shadow);
+    }
+    .tile.lock{ border-color: var(--accent); background: linear-gradient(180deg, var(--tile-locked), var(--tile)); }
+    .tile .flash{ position:absolute; inset:0; background: rgba(127,159,255,0.18); opacity:0; transform: scale(0.94); pointer-events:none; }
+    .tile.flash-on .flash{ animation: flash 180ms ease; }
+    @keyframes flash{ from{ opacity:0.5; transform: scale(1); } to{ opacity:0; transform: scale(0.92); } }
+
+    /* Keys (bigger squares, tighter gaps) */
+    .keys{ display:grid; grid-template-columns: repeat(5, 1fr); gap: var(--key-gap); padding: 2px; }
+    .key{
+      aspect-ratio:1/1; border-radius: var(--tile-radius);
+      background: var(--tile); border: 2.5px solid var(--tile-border);
+      display:grid; place-items:center;
+      font-weight:900; font-size: clamp(26px, 8.4vw, 32px);
+      letter-spacing: 1px;
+      cursor:pointer; user-select:none; touch-action: manipulation;
       box-shadow: var(--shadow);
       transition: transform 80ms ease, opacity 120ms ease;
     }
     .key:active{ transform: translateY(1px) scale(0.98); }
     .key.used{ opacity: 0.35; filter: saturate(0.4); pointer-events:none; }
 
-    /* Controls */
-    .controls{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding: 4px; margin-top: 2px;}
+    /* Controls (taller buttons) */
+    .controls{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding: 2px; margin-top: 4px;}
     .btn{
-      height: 56px; border-radius: 14px; background: var(--btn); color: var(--btn-fg);
-      display:grid; place-items:center; font-weight:900; font-size: 16px; letter-spacing:0.4px;
+      height: var(--control-h);
+      border-radius: 16px; background: var(--btn); color: var(--btn-fg);
+      display:grid; place-items:center; font-weight:900; font-size: 18px; letter-spacing:0.4px;
       cursor:pointer; user-select:none; touch-action: manipulation;
       box-shadow: var(--shadow);
       transition: transform 80ms ease, opacity 120ms ease;
     }
     .btn:active{ transform: translateY(1px) scale(0.99); }
-    .btn.secondary{ background: var(--tile); color: var(--fg); border: 2px solid var(--tile-border); }
+    .btn.secondary{ background: var(--tile); color: var(--fg); border: 2.5px solid var(--tile-border); }
 
     /* Overlays */
     .overlay{
@@ -215,39 +206,31 @@
     }
     .overlay.show{ display:grid; }
     .card{
-      width: 100%; max-width: 440px; background: var(--tile); color: var(--fg);
-      border: 2px solid var(--tile-border); border-radius: 16px; padding: 20px;
+      width: 100%; max-width: 460px; background: var(--tile); color: var(--fg);
+      border: 2.5px solid var(--tile-border); border-radius: 16px; padding: 22px;
       box-shadow: var(--shadow); text-align:center;
     }
-    .card h1{ margin: 8px 0 6px; font-size: 26px; font-weight:900; letter-spacing:0.5px;}
+    .card h1{ margin: 8px 0 8px; font-size: 28px; font-weight:900; letter-spacing:0.5px;}
     .card p{ margin: 6px 0 14px; color: var(--muted); font-weight:700; }
     .card .bigbtn{ margin-top:10px; height: 56px; border-radius: 14px; background: var(--btn); color: var(--btn-fg); display:grid; place-items:center; font-weight:900; letter-spacing:0.4px; }
 
     /* Correct guess animation */
-    .tile.success{
-      animation: successTile 380ms ease forwards;
-    }
+    .tile.success{ animation: successTile 380ms ease forwards; }
     @keyframes successTile{
       0%{ transform: scale(1); opacity:1; }
       70%{ transform: scale(1.22); opacity:0.2; }
       100%{ transform: scale(1.22); opacity:0; }
     }
 
-    /* Timer flash on level split */
-    .timer.flash{
-      background: var(--accent-weak);
-      border-radius: 8px; padding: 2px 6px;
-      animation: tf 480ms ease;
-    }
+    .timer.flash{ background: var(--accent-weak); border-radius: 8px; padding:2px 6px; animation: tf 480ms ease; }
     @keyframes tf{ from{ background: var(--accent-weak); } to{ background: transparent; } }
 
-    /* Accessibility targets */
-    button, .key, .btn, .theme, .checkbox{ -webkit-touch-callout:none; }
+    button,.key,.btn,.theme,.checkbox{ -webkit-touch-callout:none; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
+  <div class="frame">
+    <header aria-hidden="true">
       <div class="title">Jumbl</div>
       <div class="theme" id="themeToggle" aria-label="Toggle theme">
         <div class="knob"><i class="icon sun"></i></div>
@@ -293,14 +276,14 @@
     </div>
   </div>
 
-  <!-- Stub lists (paste full lists here next iteration) -->
+  <!-- Embedded stub lists (fallback if external JSON files not present) -->
   <script id="answers-json" type="application/json">
     ["APPLE","BRAIN","CHAIR","DRIVE","PLANT","SCALE","CLOUD","MUSIC","ROUTE","NERVE"]
   </script>
   <script id="guesses-json" type="application/json">
     ["APPLE","BRAIN","CHAIR","DRIVE","PLANT","SCALE","CLOUD","MUSIC","ROUTE","NERVE",
      "ALERT","APRON","BRINE","BRINK","CHAIN","CRANE","CRANK","DRANK","RIVED","RULER",
-     "PLAIN","PLATE","SCALD","SCARF","CLOUT","CLODS","MUSIC","ROTOR","NURSE","NERVE"]
+     "PLAIN","PLATE","SCALD","SCARF","CLOUT","CLODS","ROTOR","NURSE"]
   </script>
 
   <script>
@@ -309,27 +292,19 @@
     /*** ---------- Utilities ---------- ***/
     const $ = sel => document.querySelector(sel);
     const $$ = sel => Array.from(document.querySelectorAll(sel));
-
-    const shuffle = arr => {
-      for(let i=arr.length-1;i>0;i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [arr[i],arr[j]] = [arr[j],arr[i]];
-      }
-      return arr;
-    };
-
+    const shuffle = arr => { for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];} return arr; };
     const now = () => Date.now();
 
-    /*** ---------- Game State ---------- ***/
+    /*** ---------- State ---------- ***/
     const State = {
       ANSWERS: [],
       ACCEPTED_SET: new Set(),
 
-      answer: "",                 // current answer (string)
-      locked: Array(5).fill(null),// null | char (locked right-position letters)
-      current: Array(5).fill(""), // transient letters this guess
-      filledFromKey: Array(5).fill(null), // which key id filled each slot
-      bank: [],                   // array of {id, ch, used}
+      answer: "",
+      locked: Array(5).fill(null),
+      current: Array(5).fill(""),
+      filledFromKey: Array(5).fill(null),
+      bank: [],
       lives: 3,
       hardMode: false,
       levelsWon: 0,
@@ -338,7 +313,7 @@
       levelStartAt: null,
       rafId: null,
 
-      levelGuesses: 0,            // guesses used on current level (for lose modal)
+      levelGuesses: 0,
     };
 
     /*** ---------- DOM Refs ---------- ***/
@@ -351,34 +326,27 @@
     const loseSub = $("#loseSub");
 
     /*** ---------- Rendering ---------- ***/
-    function renderAnswer() {
+    function renderAnswer(){
       answerRow.innerHTML = "";
       for(let i=0;i<5;i++){
         const t = document.createElement("div");
         t.className = "tile" + (State.locked[i] ? " lock" : "");
         t.setAttribute("data-idx", i);
-        const letter = State.locked[i] || State.current[i] || "";
-        t.textContent = letter;
-        const flash = document.createElement("div");
-        flash.className = "flash";
-        t.appendChild(flash);
+        t.textContent = State.locked[i] || State.current[i] || "";
+        const flash = document.createElement("div"); flash.className="flash"; t.appendChild(flash);
         answerRow.appendChild(t);
       }
     }
-
-    function renderKeys() {
+    function renderKeys(){
       keysGrid.innerHTML = "";
       for(const k of State.bank){
         const b = document.createElement("button");
         b.className = "key" + (k.used ? " used":"");
-        b.textContent = k.ch;
-        b.type = "button";
-        b.dataset.id = String(k.id);
+        b.textContent = k.ch; b.type = "button"; b.dataset.id = String(k.id);
         b.addEventListener("click", onKeyPress);
         keysGrid.appendChild(b);
       }
     }
-
     function setupLives(){
       livesEl.innerHTML = "";
       for(let i=1;i<=3;i++){
@@ -388,35 +356,17 @@
         livesEl.appendChild(d);
       }
     }
-
     function flashTile(idx){
-      const tile = answerRow.children[idx];
-      if(!tile) return;
-      tile.classList.remove("flash-on");
-      // force reflow
-      void tile.offsetWidth;
-      tile.classList.add("flash-on");
+      const tile = answerRow.children[idx]; if(!tile) return;
+      tile.classList.remove("flash-on"); void tile.offsetWidth; tile.classList.add("flash-on");
       setTimeout(()=> tile.classList.remove("flash-on"), 200);
     }
-
     function successAnimationThenNext(){
-      // animate each tile
-      for(let i=0;i<5;i++){
-        const tile = answerRow.children[i];
-        if(tile){ tile.classList.add("success"); }
-      }
-      // brief pause then next
-      setTimeout(()=>{
-        State.levelsWon++;
-        flashSplit(levelSeconds());
-        resetLevelForNext();
-      }, 450);
+      for(let i=0;i<5;i++){ const tile = answerRow.children[i]; if(tile) tile.classList.add("success"); }
+      setTimeout(()=>{ State.levelsWon++; flashSplit(); resetLevelForNext(); }, 450);
     }
-
     function rowShake(){
-      answerRow.classList.remove("shake");
-      void answerRow.offsetWidth;
-      answerRow.classList.add("shake");
+      answerRow.classList.remove("shake"); void answerRow.offsetWidth; answerRow.classList.add("shake");
       setTimeout(()=>answerRow.classList.remove("shake"), 320);
     }
 
@@ -425,44 +375,17 @@
       const h = Math.floor(total/3600);
       const m = Math.floor((total%3600)/60);
       const s = total%60;
-      if(h>0) return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-      return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      return h>0
+        ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+        : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
+    function tick(){ if(!State.gameStartAt){ timerEl.textContent="00:00"; return; } timerEl.textContent = timerFormat(now()-State.gameStartAt); State.rafId = requestAnimationFrame(tick); }
+    function startTimer(){ if(State.rafId) cancelAnimationFrame(State.rafId); State.rafId = requestAnimationFrame(tick); }
+    function stopTimer(){ if(State.rafId) cancelAnimationFrame(State.rafId); State.rafId = null; }
+    function flashSplit(){ timerEl.classList.add("flash"); setTimeout(()=>timerEl.classList.remove("flash"), 480); }
 
-    function tick(){
-      if(!State.gameStartAt){ timerEl.textContent = "00:00"; return; }
-      timerEl.textContent = timerFormat(now()-State.gameStartAt);
-      State.rafId = requestAnimationFrame(tick);
-    }
-
-    function startTimer(){
-      if(State.rafId) cancelAnimationFrame(State.rafId);
-      State.rafId = requestAnimationFrame(tick);
-    }
-
-    function stopTimer(){
-      if(State.rafId) cancelAnimationFrame(State.rafId);
-      State.rafId = null;
-    }
-
-    function levelSeconds(){
-      if(!State.levelStartAt) return 0;
-      return Math.round((now()-State.levelStartAt)/1000);
-    }
-
-    function flashSplit(){
-      timerEl.classList.add("flash");
-      setTimeout(()=>timerEl.classList.remove("flash"), 480);
-    }
-
-    /*** ---------- Key / Input Logic ---------- ***/
-    function nextOpenSlot(){
-      for(let i=0;i<5;i++){
-        if(State.locked[i]) continue;
-        if(!State.current[i]) return i;
-      }
-      return -1;
-    }
+    /*** ---------- Input & Mechanics ---------- ***/
+    function nextOpenSlot(){ for(let i=0;i<5;i++){ if(State.locked[i]) continue; if(!State.current[i]) return i; } return -1; }
 
     function onKeyPress(e){
       const id = Number(e.currentTarget.dataset.id);
@@ -470,25 +393,20 @@
       if(!k || k.used) return;
 
       const idx = nextOpenSlot();
-      if(idx===-1) return; // row full
+      if(idx===-1) return;
 
       State.current[idx] = k.ch;
       State.filledFromKey[idx] = id;
       k.used = true;
 
-      renderAnswer(); // refresh tiles text
-      renderKeys();   // refresh used state
-      flashTile(idx);
-
+      renderAnswer(); renderKeys(); flashTile(idx);
       maybeAutoSubmit();
     }
 
     function backspace(){
-      // remove last entered non-locked slot
       for(let i=4;i>=0;i--){
         if(State.locked[i]) continue;
         if(State.current[i]){
-          // free key
           const keyId = State.filledFromKey[i];
           if(keyId!==null){
             const k = State.bank.find(x=>x.id===keyId);
@@ -496,86 +414,35 @@
           }
           State.current[i] = "";
           State.filledFromKey[i] = null;
-          renderAnswer();
-          renderKeys();
+          renderAnswer(); renderKeys();
           break;
         }
       }
     }
+    function shuffleBank(){ const arr = State.bank.slice(); shuffle(arr); State.bank = arr; renderKeys(); }
 
-    function shuffleBank(){
-      // keep items (and their used flags), just reorder
-      const arr = State.bank.slice();
-      shuffle(arr);
-      State.bank = arr;
-      renderKeys();
-    }
-
-    function rowComplete(){
-      for(let i=0;i<5;i++){
-        if(!(State.locked[i] || State.current[i])) return false;
-      }
-      return true;
-    }
-
-    function buildGuess(){
-      let g = "";
-      for(let i=0;i<5;i++){
-        g += (State.locked[i] || State.current[i] || " ");
-      }
-      return g;
-    }
-
-    function evaluateGuess(guess, answer){
-      // returns array of 'good'|'bad' by index (position match only)
-      const out = Array(5).fill("bad");
-      for(let i=0;i<5;i++){
-        if(guess[i]===answer[i]) out[i]="good";
-      }
-      return out;
-    }
-
-    function markLocked(pattern, guess){
-      for(let i=0;i<5;i++){
-        if(pattern[i]==="good"){
-          State.locked[i] = guess[i];
-        }
-      }
-    }
-
+    function rowComplete(){ for(let i=0;i<5;i++){ if(!(State.locked[i] || State.current[i])) return false; } return true; }
+    function buildGuess(){ let g=""; for(let i=0;i<5;i++){ g += (State.locked[i] || State.current[i] || " "); } return g; }
+    function evaluateGuess(guess, answer){ const out=Array(5).fill("bad"); for(let i=0;i<5;i++){ if(guess[i]===answer[i]) out[i]="good"; } return out; }
+    function markLocked(pattern, guess){ for(let i=0;i<5;i++){ if(pattern[i]==="good"){ State.locked[i]=guess[i]; } } }
     function clearTransient(){
       for(let i=0;i<5;i++){
         if(!State.locked[i]){
-          // free used key for this slot
           const keyId = State.filledFromKey[i];
-          if(keyId!==null){
-            const k = State.bank.find(x=>x.id===keyId);
-            if(k) k.used = false;
-          }
-          State.current[i] = "";
-          State.filledFromKey[i] = null;
+          if(keyId!==null){ const k = State.bank.find(x=>x.id===keyId); if(k) k.used=false; }
+          State.current[i]=""; State.filledFromKey[i]=null;
         }
       }
-      renderAnswer();
-      renderKeys();
+      renderAnswer(); renderKeys();
     }
 
     function loseLife(){
       if(State.lives<=0) return;
-      // find rightmost active life dot
       const activeIdx = State.lives;
       const dot = livesEl.querySelector(`.dot[data-index="${activeIdx}"]`);
-      if(dot){
-        dot.classList.add("pop");
-        setTimeout(()=>{
-          dot.classList.remove("pop");
-          dot.classList.add("off");
-        }, 340);
-      }
+      if(dot){ dot.classList.add("pop"); setTimeout(()=>{ dot.classList.remove("pop"); dot.classList.add("off"); }, 340); }
       State.lives--;
-      if(State.lives<=0){
-        gameOver();
-      }
+      if(State.lives<=0){ gameOver(); }
     }
 
     function maybeAutoSubmit(){
@@ -583,83 +450,54 @@
       const guess = buildGuess();
       const ans = State.answer;
 
-      // classify
-      if(guess===ans){
-        State.levelGuesses++;
-        // success animation then next level
-        successAnimationThenNext();
-        return;
-      }
+      if(guess===ans){ State.levelGuesses++; successAnimationThenNext(); return; }
 
       if(State.ACCEPTED_SET.has(guess)){
         State.levelGuesses++;
-        // valid but wrong: lock correct positions, decrement life, gentle shake, clear others
         const pattern = evaluateGuess(guess, ans);
         markLocked(pattern, guess);
         renderAnswer();
-        answerRow.classList.add("shake");
-        setTimeout(()=>answerRow.classList.remove("shake"), 300);
+        answerRow.classList.add("shake"); setTimeout(()=>answerRow.classList.remove("shake"), 300);
         loseLife();
         clearTransient();
         return;
       }
 
-      // invalid: shake + clear (no life cost)
       rowShake();
       clearTransient();
     }
 
-    /*** ---------- Level/Run Management ---------- ***/
+    /*** ---------- Level/Run ---------- ***/
     function seedLetters(){
-      const chars = State.answer.split("");
-      shuffle(chars);
-      // represent bank items with stable ids for backspace tracking across shuffles
-      let idCounter = 0;
-      State.bank = chars.map(ch => ({ id: idCounter++, ch, used:false }));
+      const chars = State.answer.split(""); shuffle(chars);
+      let idCounter = 0; State.bank = chars.map(ch => ({ id:idCounter++, ch, used:false }));
     }
-
-    function pickNewAnswer(){
-      // for variety: random from list; in next pass you can advance sequentially if you want
-      State.answer = State.ANSWERS[Math.floor(Math.random()*State.ANSWERS.length)];
-    }
-
+    function pickNewAnswer(){ State.answer = State.ANSWERS[Math.floor(Math.random()*State.ANSWERS.length)]; }
     function resetLevelForNext(){
       pickNewAnswer();
       State.locked = Array(5).fill(null);
       State.current = Array(5).fill("");
       State.filledFromKey = Array(5).fill(null);
       State.levelGuesses = 0;
-      if(!State.hardMode){
-        State.lives = 3;
-      }
-      setupLives();
-      seedLetters();
-      renderAnswer();
-      renderKeys();
+      if(!State.hardMode){ State.lives = 3; }
+      setupLives(); seedLetters(); renderAnswer(); renderKeys();
       State.levelStartAt = now();
     }
-
     function newRun(showIntro=false){
       State.levelsWon = 0;
       State.lives = 3;
       State.locked = Array(5).fill(null);
       State.current = Array(5).fill("");
       State.filledFromKey = Array(5).fill(null);
-      setupLives();
-      pickNewAnswer();
-      seedLetters();
-      renderAnswer();
-      renderKeys();
-      State.gameStartAt = null; // will start on Play
-      State.levelStartAt = null;
-      timerEl.textContent = "00:00";
-      stopTimer();
+      setupLives(); pickNewAnswer(); seedLetters(); renderAnswer(); renderKeys();
+      State.gameStartAt = null; State.levelStartAt = null;
+      timerEl.textContent = "00:00"; stopTimer();
       if(showIntro){ intro.classList.add("show"); }
     }
+    function startRunNow(){ State.gameStartAt = now(); State.levelStartAt = now(); startTimer(); }
 
     function gameOver(){
       stopTimer();
-      // subtext: "3 guesses • MM:SS • XX levels"
       const guesses = State.levelGuesses || 0;
       const time = timerEl.textContent;
       const levels = State.levelsWon;
@@ -684,99 +522,86 @@
       setTheme(cur==="light" ? "dark" : "light");
     });
 
-    // Hard mode toggle (checkbox look, restarts run)
+    // Hard mode toggle: restart run AND start timer immediately
     const hardToggle = $("#hardToggle");
     function renderHard(){
-      if(State.hardMode){
-        hardToggle.classList.add("on");
-        hardToggle.setAttribute("aria-checked","true");
-        hardToggle.textContent = "✓";
-      }else{
-        hardToggle.classList.remove("on");
-        hardToggle.setAttribute("aria-checked","false");
-        hardToggle.textContent = "";
-      }
+      if(State.hardMode){ hardToggle.classList.add("on"); hardToggle.setAttribute("aria-checked","true"); hardToggle.textContent = "✓"; }
+      else{ hardToggle.classList.remove("on"); hardToggle.setAttribute("aria-checked","false"); hardToggle.textContent = ""; }
     }
     hardToggle.addEventListener("click", ()=>{
       State.hardMode = !State.hardMode;
       renderHard();
-      // Restart the run when toggled
       newRun(false);
+      startRunNow(); // <-- start timer immediately when toggled
     });
 
     // Intro / Lose modal buttons
-    $("#playBtn").addEventListener("click", ()=>{
-      intro.classList.remove("show");
-      State.gameStartAt = now();
-      State.levelStartAt = now();
-      startTimer();
-    });
-    $("#tryAgainBtn").addEventListener("click", ()=>{
-      lose.classList.remove("show");
-      newRun(false);
-      State.gameStartAt = now();
-      State.levelStartAt = now();
-      startTimer();
-    });
+    $("#playBtn").addEventListener("click", ()=>{ intro.classList.remove("show"); startRunNow(); });
+    $("#tryAgainBtn").addEventListener("click", ()=>{ lose.classList.remove("show"); newRun(false); startRunNow(); });
 
-    /*** ---------- Keyboard (optional for dev) ---------- ***/
+    /*** ---------- Keyboard (dev) ---------- ***/
     window.addEventListener("keydown", (e)=>{
       const k = e.key.toUpperCase();
       if(k==="BACKSPACE"){ e.preventDefault(); backspace(); return; }
       if(k.length===1 && k>="A" && k<="Z"){
-        // choose first unused key matching k
         const match = State.bank.find(b=>!b.used && b.ch===k);
-        if(match){
-          // simulate press
-          const btn = keysGrid.querySelector(`.key[data-id="${match.id}"]`);
-          if(btn){ btn.click(); }
-        }
+        if(match){ const btn = keysGrid.querySelector(`.key[data-id="${match.id}"]`); if(btn){ btn.click(); } }
       }
     });
 
-    /*** ---------- Load Lists, Boot ---------- ***/
-    function boot(){
-      // theme
+    /*** ---------- Load Lists (external JSON if present) ---------- ***/
+    async function loadWordLists(){
+      // Try external files first (answers.json, guesses.json) — useful on GitHub Pages.
+      // Each should be a JSON array of UPPERCASE strings.
+      let extAnswers = null, extGuesses = null;
       try{
-        const saved = localStorage.getItem("jumbl-theme");
-        if(saved) setTheme(saved);
-        else setTheme("light");
-      }catch{ setTheme("light"); }
+        const aResp = await fetch("answers.json", {cache:"no-store"});
+        if(aResp.ok) extAnswers = await aResp.json();
+      }catch{}
+      try{
+        const gResp = await fetch("guesses.json", {cache:"no-store"});
+        if(gResp.ok) extGuesses = await gResp.json();
+      }catch{}
 
-      // lists
-      try{
-        const A = JSON.parse($("#answers-json").textContent.trim());
-        const G = JSON.parse($("#guesses-json").textContent.trim());
-        State.ANSWERS = A;
-        State.ACCEPTED_SET = new Set(G.concat(A)); // ensure answers are accepted
-      }catch(e){
-        console.error("Word list parse error", e);
-        State.ANSWERS = ["APPLE"];
-        State.ACCEPTED_SET = new Set(["APPLE"]);
+      if(extAnswers && Array.isArray(extAnswers)) State.ANSWERS = extAnswers;
+      else{
+        try{ State.ANSWERS = JSON.parse($("#answers-json").textContent.trim()); }
+        catch{ State.ANSWERS = ["APPLE"]; }
       }
+
+      let accepted = [];
+      if(extGuesses && Array.isArray(extGuesses)) accepted = extGuesses;
+      else{
+        try{ accepted = JSON.parse($("#guesses-json").textContent.trim()); }
+        catch{ accepted = []; }
+      }
+      // Ensure answers are always accepted
+      State.ACCEPTED_SET = new Set([...(accepted||[]), ...State.ANSWERS]);
+    }
+
+    /*** ---------- Boot ---------- ***/
+    function minimalTests(){
+      const testAns="APPLE";
+      const testChars = testAns.split("").sort().join("");
+      State.answer=testAns; seedLetters();
+      const bankChars=State.bank.map(b=>b.ch).sort().join("");
+      console.assert(bankChars===testChars,"Seed letters must be permutation of answer");
+      pickNewAnswer(); seedLetters(); renderKeys();
+      console.assert(typeof nextOpenSlot==="function","helpers wired");
+    }
+
+    async function boot(){
+      try{ const saved = localStorage.getItem("jumbl-theme"); if(saved) setTheme(saved); else setTheme("light"); }catch{ setTheme("light"); }
+
+      await loadWordLists();
 
       renderHard();
       setupLives();
       renderAnswer();
       renderKeys();
+      newRun(true); // show intro on first load
 
-      // start with intro modal visible on first load
-      newRun(true);
-
-      /*** ---------- Minimal tests (console) ---------- ***/
-      // 1) seed letters are permutation
-      const testAns = "APPLE";
-      const testChars = testAns.split("").sort().join("");
-      State.answer = testAns;
-      seedLetters();
-      const bankChars = State.bank.map(b=>b.ch).sort().join("");
-      console.assert(bankChars===testChars, "Seed letters must be permutation of answer");
-      // restore actual
-      pickNewAnswer(); seedLetters(); renderKeys();
-
-      // 2) auto-submit triggers when row complete (simulate)
-      // (We won't mutate state mid-run; just verify helper)
-      console.assert(typeof rowComplete === "function", "rowComplete exists");
+      minimalTests();
     }
 
     document.addEventListener("DOMContentLoaded", boot);
