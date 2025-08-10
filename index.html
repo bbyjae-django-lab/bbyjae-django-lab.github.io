@@ -2,679 +2,525 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, viewport-fit=cover"
+/>
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<title>Jumbl</title>
+<title>JUMBL</title>
 <style>
-  :root {
-    --bg: #f7f7f9;
-    --fg: #1f2328;
-    --muted: #6a6f76;
-    --tile: #ffffff;
-    --tile-empty: #e9ebef;
-    --accent: #6b8afd;
-    --accent-weak: #c9d4ff;
-    --danger: #ff5c7a;
-    --ok: #35c47c;
-    --shadow: 0 6px 20px rgba(0,0,0,.08);
-    --radius: 16px;
+  :root{
+    --bg:#f7f7f9; --fg:#1f2328; --muted:#6a6f76;
+    --tile:#ffffff; --tile-empty:#e9ebef;
+    --accent:#6b8afd; --ok:#35c47c;           /* gradient endpoints */
+    --accent-weak:#c9d4ff;
+    --danger:#ff5c7a;
+    --shadow:0 6px 20px rgba(0,0,0,.08);
+    --radius:16px;
+    --sheet:#ffffff;
   }
-  .dark {
-    --bg: #0f1115;
-    --fg: #e6e7eb;
-    --muted: #9aa1aa;
-    --tile: #171a20;
-    --tile-empty: #1f2430;
-    --accent: #8aa4ff;
-    --accent-weak: #2b3760;
-    --danger: #ff6b88;
-    --ok: #3ed695;
-    --shadow: 0 8px 24px rgba(0,0,0,.35);
+  .dark{
+    --bg:#0f1115; --fg:#e6e7eb; --muted:#9aa1aa;
+    --tile:#171a20; --tile-empty:#1f2430;
+    --accent:#8aa4ff; --ok:#3ed695;
+    --accent-weak:#2b3760;
+    --danger:#ff6b88;
+    --shadow:0 8px 24px rgba(0,0,0,.35);
+    --sheet:#12161e;
   }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; }
-  body {
-    margin: 0;
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ height:100%; -webkit-text-size-adjust:100%; }
+  body{
+    margin:0; min-height:100%;
     font-family: system-ui, -apple-system, "SF Pro Text", Segoe UI, Roboto, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--fg);
+    background:var(--bg); color:var(--fg);
   }
-  .app {
-    min-height: 100%;
-    padding: calc(env(safe-area-inset-top, 0px) + 12px) 12px calc(env(safe-area-inset-bottom, 0px) + 16px);
-    display: grid;
-    grid-template-rows: auto auto auto 1fr auto auto;
-    gap: 12px;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  header {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 8px;
-  }
-  .title {
-    grid-column: 2;
-    text-align: center;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    font-size: clamp(22px, 5vw, 28px);
-  }
-  .theme-toggle {
-    justify-self: end;
-    border: none;
-    background: var(--tile);
-    color: var(--fg);
-    border-radius: 999px;
-    box-shadow: var(--shadow);
-    padding: 8px 12px;
-    font-size: 16px;
-  }
-  .lives {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-  }
-  .dot {
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--accent-weak);
-  }
-  .dot.active { background: var(--accent); }
 
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    color: var(--muted);
-    padding: 0 2px;
+  .app{
+    min-height:100%;
+    padding:
+      calc(env(safe-area-inset-top,0px) + 12px)
+      12px
+      calc(env(safe-area-inset-bottom,0px) + 18px);
+    display:grid;
+    grid-template-rows:auto auto auto 1fr auto auto;
+    gap:10px;
+    max-width:600px; margin:0 auto;
   }
-  .level { text-transform: lowercase; }
-  .timer { font-variant-numeric: tabular-nums; }
 
-  .countdown {
-    background: var(--tile);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 10px 12px;
+  /* Transparent header: no background, flows with page */
+  header{
+    display:grid; grid-template-columns: 1fr auto 1fr;
+    align-items:center; gap:8px;
   }
-  .countdown-bar {
-    position: relative;
-    height: 8px;
-    background: var(--tile-empty);
-    border-radius: 8px;
-    overflow: hidden;
+  .title{
+    grid-column:2; text-align:center;
+    font-weight:900; letter-spacing:1px;
+    font-size:clamp(22px,5.2vw,28px);
   }
-  .countdown-fill {
-    position: absolute; left: 0; top: 0; bottom: 0;
-    width: 0%;
-    background: linear-gradient(90deg, var(--accent), var(--ok));
+  .theme-toggle{
+    justify-self:end; border:none; background:transparent;
+    padding:6px; border-radius:999px;
+  }
+  .theme-toggle svg{
+    width:28px; height:28px; display:block;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.12));
+  }
+  .dark .theme-toggle svg{ color:#e6e7eb; }
+  :not(.dark) .theme-toggle svg{ color:#1f2328; }
+
+  /* Lives: rounded squares */
+  .lives{ display:flex; justify-content:center; gap:8px; }
+  .life{
+    width:12px; height:12px; border-radius:6px;
+    background:var(--accent-weak);
+  }
+  .life.on{ background:var(--accent); }
+
+  /* Level label (left only) */
+  .levelbar{
+    display:flex; align-items:center; justify-content:flex-start;
+    font-size:14px; color:var(--muted); padding:0 2px;
+  }
+
+  /* Countdown: big bar, number inside (left) */
+  .countdown{
+    background:var(--tile); border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:10px 12px 12px;
+  }
+  .cd-bar{
+    position:relative; height:16px; border-radius:12px; overflow:hidden;
+    background:var(--tile-empty);
+  }
+  .cd-fill{
+    position:absolute; inset:0 auto 0 0; width:0%;
+    background:linear-gradient(90deg, var(--accent), var(--ok));
     transition: width 100ms linear;
   }
-  .countdown-text {
-    margin-top: 6px;
-    text-align: right;
+  .cd-text{
+    position:absolute; left:10px; top:50%; transform:translateY(-50%);
     font-variant-numeric: tabular-nums;
-    color: var(--muted);
-    font-size: 13px;
+    font-size:13px; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35);
+    pointer-events:none;
   }
 
-  .answer-row {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-top: 6px;
+  .answer-row{
+    display:grid; grid-template-columns:repeat(5,1fr);
+    gap:8px; margin-top:8px;   /* closer to bar */
   }
-  .tile {
-    aspect-ratio: 1 / 1;
-    display: grid; place-items: center;
-    border-radius: 14px;
-    background: var(--tile-empty);
-    color: var(--fg);
-    font-size: clamp(22px, 7vw, 30px);
-    font-weight: 700;
-    letter-spacing: 1px;
-    box-shadow: var(--shadow);
+  .tile{
+    aspect-ratio:1/1; display:grid; place-items:center;
+    border-radius:14px; background:var(--tile-empty);
+    color:var(--fg); font-size:clamp(22px,7vw,30px);
+    font-weight:800; letter-spacing:1px; box-shadow:var(--shadow);
     transition: background .2s ease, transform .2s ease, opacity .2s ease;
   }
-  .tile.filled { background: var(--tile); }
-  .tile.correct { animation: correctGrow 240ms ease; }
-  .answer-row.shake { animation: shake 260ms ease; }
+  .tile.filled{ background:var(--tile); }
+  .tile.correct{ animation: correctGrow 240ms ease; }
+  .answer-row.shake{ animation: shake 260ms ease; }
 
-  .bank {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-top: 6px;
+  .bank{
+    display:grid; grid-template-columns:repeat(5,1fr);
+    gap:10px; margin-top:6px;
   }
-  .bank button {
-    aspect-ratio: 1/1;
-    border: none;
-    border-radius: 14px;
-    background: var(--tile);
-    box-shadow: var(--shadow);
-    font-size: clamp(20px, 7vw, 28px);
-    font-weight: 800;
-    color: var(--fg);
-    letter-spacing: 1px;
+  .bank button{
+    aspect-ratio:1/1; border:none; border-radius:14px;
+    background:var(--tile); color:var(--fg);
+    font-size:clamp(20px,7vw,28px); font-weight:900; letter-spacing:1px;
+    box-shadow:var(--shadow);
   }
-  .bank button:disabled {
-    opacity: 0.35;
-    transform: scale(0.97);
-  }
+  .bank button:disabled{ opacity:.35; transform:scale(.97); }
 
-  .controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 4px;
+  .controls{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:2px;
   }
-  .controls button {
-    padding: 14px;
-    border-radius: 14px;
-    border: none;
-    background: var(--tile);
-    color: var(--fg);
-    font-size: clamp(16px, 4.5vw, 18px);
-    font-weight: 700;
-    box-shadow: var(--shadow);
-  }
-
-  .primary {
-    background: var(--accent);
-    color: white;
+  .controls button{
+    border:none; border-radius:14px; background:var(--tile); color:var(--fg);
+    font-size:clamp(16px,4.5vw,18px); font-weight:800; box-shadow:var(--shadow);
+    padding:16px; min-height:64px;          /* larger/squarer */
   }
 
   /* Modals */
-  .modal {
-    position: fixed; inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    z-index: 1000;
-  }
-  .modal.show { display: flex; }
-  .overlay {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,.35);
-    backdrop-filter: blur(2px);
-  }
-  .sheet {
-    position: relative;
-    width: 100%;
-    max-width: 480px;
+  .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; padding:24px; z-index:1000; }
+  .modal.show{ display:flex; }
+  .overlay{ position:absolute; inset:0; background:rgba(0,0,0,.35); backdrop-filter: blur(2px); }
+  .sheet{
+    position:relative; width:100%; max-width:480px;
     max-height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px);
-    background: var(--tile);
-    color: var(--fg);
-    border-radius: 20px;
-    padding: 20px 16px 16px;
-    box-shadow: var(--shadow);
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    gap: 10px;
+    background:var(--sheet); color:var(--fg);
+    border-radius:24px; padding:22px 18px 16px; box-shadow:var(--shadow);
+    display:grid; grid-template-rows:auto 1fr auto; gap:12px; text-align:center;
   }
-  .sheet h2 {
-    margin: 0;
-    text-align: center;
-    font-size: 22px;
+  .sheet h2{ margin:0; font-size:22px; }
+  .sheet .content{ overflow:auto; -webkit-overflow-scrolling:touch; font-size:15px; color:var(--muted); line-height:1.5; }
+  .sheet .actions{ display:grid; gap:8px; }
+  .gbtn{
+    border:none; border-radius:14px; color:white; padding:14px; font-weight:800;
+    background:linear-gradient(90deg, var(--accent), var(--ok));
   }
-  .sheet .content {
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    font-size: 15px;
-    color: var(--muted);
-    line-height: 1.4;
-  }
-  .sheet .actions { display: grid; gap: 8px; }
 
-  .hidden { display: none !important; }
+  .hidden{ display:none !important; }
 
   /* Animations */
-  @keyframes correctGrow {
-    0% { transform: scale(1); opacity: 1; }
-    60% { transform: scale(1.2); opacity: .9; }
-    100% { transform: scale(1); opacity: 1; }
+  @keyframes correctGrow{
+    0%{ transform:scale(1); opacity:1;}
+    60%{ transform:scale(1.2); opacity:.9;}
+    100%{ transform:scale(1); opacity:1;}
   }
-  @keyframes shake {
-    0% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-6px); }
-    80% { transform: translateX(6px); }
-    100% { transform: translateX(0); }
+  @keyframes shake{
+    0%{ transform:translateX(0);}
+    20%{ transform:translateX(-8px);}
+    40%{ transform:translateX(8px);}
+    60%{ transform:translateX(-6px);}
+    80%{ transform:translateX(6px);}
+    100%{ transform:translateX(0);}
   }
 
-  /* Buttons sizing for thumb */
-  button { min-height: 44px; }
+  button{ min-height:44px; }
 </style>
 </head>
 <body>
-<div id="root" class="app">
-  <header>
-    <div></div>
-    <div class="title">Jumbl</div>
-    <button id="themeBtn" class="theme-toggle" aria-label="Toggle theme">🌙</button>
-  </header>
+  <div id="root" class="app">
+    <header>
+      <div></div>
+      <div class="title">JUMBL</div>
+      <button id="themeBtn" class="theme-toggle" aria-label="Toggle theme">
+        <!-- default icon swapped by JS -->
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"></svg>
+      </button>
+    </header>
 
-  <div class="lives" id="livesRow" aria-label="Lives"></div>
+    <div class="lives" id="livesRow" aria-label="Lives"></div>
 
-  <div class="topbar">
-    <div class="level" id="levelLabel">lvl one</div>
-    <div class="timer" id="runTimer">00:00</div>
-  </div>
+    <div class="levelbar"><div class="level" id="levelLabel">lvl one</div></div>
 
-  <div class="countdown" aria-live="polite">
-    <div class="countdown-bar"><div id="cdFill" class="countdown-fill"></div></div>
-    <div class="countdown-text"><span id="cdText">—</span></div>
-  </div>
-
-  <div class="answer-row" id="answerRow" aria-label="Your guess"></div>
-
-  <div class="bank" id="bankRow" aria-label="Letter bank"></div>
-
-  <div class="controls">
-    <button id="shuffleBtn" aria-label="Shuffle letters">shuffle</button>
-    <button id="backBtn" aria-label="Backspace">⌫</button>
-  </div>
-</div>
-
-<!-- Intro Modal -->
-<div id="introModal" class="modal show" aria-modal="true" role="dialog">
-  <div class="overlay"></div>
-  <div class="sheet">
-    <h2>How to play</h2>
-    <div class="content">
-      <p>Make any valid 5-letter word from the shuffled letter bank. A correct word advances the level and resets the per-word timer.</p>
-      <ul>
-        <li>Timer runs per word. If it hits 0 → you lose a life and get a new letter bank (same level).</li>
-        <li>3 lives. Game ends at 0 lives.</li>
-        <li>Tap letters to fill tiles. Auto-submit when all 5 are filled.</li>
-        <li>Wrong word? The row shakes and clears (no life lost).</li>
-      </ul>
-      <p><strong>Note:</strong> The word list loads from <code>guesses.txt</code>. If your connection is slow, you may see a brief loading step with retry.</p>
+    <div class="countdown" aria-live="polite">
+      <div class="cd-bar">
+        <div id="cdFill" class="cd-fill"></div>
+        <div id="cdText" class="cd-text">30.0s</div>
+      </div>
     </div>
-    <div class="actions">
-      <button id="playBtn" class="primary">Play</button>
+
+    <div class="answer-row" id="answerRow" aria-label="Your guess"></div>
+
+    <div class="bank" id="bankRow" aria-label="Letter bank"></div>
+
+    <div class="controls">
+      <button id="shuffleBtn" aria-label="Shuffle letters">shuffle</button>
+      <button id="backBtn" aria-label="Backspace">⌫</button>
     </div>
   </div>
-</div>
 
-<!-- Game Over Modal -->
-<div id="gameOverModal" class="modal" aria-modal="true" role="dialog">
-  <div class="overlay"></div>
-  <div class="sheet">
-    <h2>Game Over</h2>
-    <div class="content">
-      <p id="summaryText"></p>
-    </div>
-    <div class="actions">
-      <button id="againBtn" class="primary">try again ➜</button>
+  <!-- Intro Modal -->
+  <div id="introModal" class="modal">
+    <div class="overlay"></div>
+    <div class="sheet">
+      <h2>How to play</h2>
+      <div class="content">
+        Make any valid 5-letter word from the shuffled letters.<br/>
+        A correct word advances the level and resets the timer.<br/><br/>
+        <strong>30s per word • 3 lives</strong>
+      </div>
+      <div class="actions">
+        <button id="playBtn" class="gbtn">Play</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Loading / Retry Modal -->
-<div id="fetchModal" class="modal show" aria-modal="true" role="dialog">
-  <div class="overlay"></div>
-  <div class="sheet">
-    <h2>Loading word list…</h2>
-    <div class="content" id="fetchStatus">Fetching <code>guesses.txt</code></div>
-    <div class="actions">
-      <button id="retryBtn" class="">Retry</button>
+  <!-- Game Over Modal -->
+  <div id="gameOverModal" class="modal">
+    <div class="overlay"></div>
+    <div class="sheet">
+      <h2>Game Over</h2>
+      <div class="content"><p id="summaryText"></p></div>
+      <div class="actions"><button id="againBtn" class="gbtn">try again ➜</button></div>
     </div>
   </div>
-</div>
+
+  <!-- Loading / Retry Modal -->
+  <div id="fetchModal" class="modal show">
+    <div class="overlay"></div>
+    <div class="sheet">
+      <h2>Loading word lists…</h2>
+      <div class="content" id="fetchStatus">Fetching <code>answers.txt</code> and <code>guesses.txt</code></div>
+      <div class="actions"><button id="retryBtn" class="gbtn">Retry</button></div>
+    </div>
+  </div>
 
 <script>
-(() => {
-  // ===== Config =====
-  const COUNTDOWN_SECONDS = 20;   // per-word timer
-  const STARTING_LIVES = 3;
+(()=> {
+  // ===== Config (updated) =====
+  const COUNTDOWN_SECONDS = 30;     // per-word timer
+  const STARTING_LIVES   = 3;
 
   // ===== State =====
-  let ACCEPTED_SET = new Set();   // uppercase valid words
-  let bank = [];                  // [{ch:'A', used:false}, ...] length 5
-  let current = [];               // [{ch:'A', bankIndex:0}, ...] up to 5
+  let ACCEPTED_SET = new Set();     // guesses.txt
+  let ANSWER_POOL  = [];            // answers.txt (array)
+  let bank = [];                    // [{ch, used}]
+  let current = [];                 // [{ch, bankIndex}]
   let lives = STARTING_LIVES;
   let level = 1;
-  let gameStartAt = 0;            // ms
-  let wordDeadlineAt = 0;         // ms
-  let runTimerInterval = null;
+  let wordDeadlineAt = 0;
   let wordTimerInterval = null;
   let isAnimating = false;
 
   // ===== Elements =====
-  const livesRow = document.getElementById('livesRow');
+  const livesRow   = document.getElementById('livesRow');
   const levelLabel = document.getElementById('levelLabel');
-  const runTimerEl = document.getElementById('runTimer');
-  const cdFill = document.getElementById('cdFill');
-  const cdText = document.getElementById('cdText');
-  const answerRow = document.getElementById('answerRow');
-  const bankRow = document.getElementById('bankRow');
+  const cdFill     = document.getElementById('cdFill');
+  const cdText     = document.getElementById('cdText');
+  const answerRow  = document.getElementById('answerRow');
+  const bankRow    = document.getElementById('bankRow');
   const shuffleBtn = document.getElementById('shuffleBtn');
-  const backBtn = document.getElementById('backBtn');
+  const backBtn    = document.getElementById('backBtn');
 
-  const introModal = document.getElementById('introModal');
-  const playBtn = document.getElementById('playBtn');
-  const gameOverModal = document.getElementById('gameOverModal');
-  const againBtn = document.getElementById('againBtn');
+  const introModal   = document.getElementById('introModal');
+  const playBtn      = document.getElementById('playBtn');
+  const gameOverModal= document.getElementById('gameOverModal');
+  const againBtn     = document.getElementById('againBtn');
 
-  const fetchModal = document.getElementById('fetchModal');
-  const fetchStatus = document.getElementById('fetchStatus');
-  const retryBtn = document.getElementById('retryBtn');
-  const themeBtn = document.getElementById('themeBtn');
+  const fetchModal   = document.getElementById('fetchModal');
+  const fetchStatus  = document.getElementById('fetchStatus');
+  const retryBtn     = document.getElementById('retryBtn');
+  const themeBtn     = document.getElementById('themeBtn');
+  const themeIcon    = document.getElementById('themeIcon');
 
   // ===== Utilities =====
-  const sleep = ms => new Promise(r => setTimeout(r, ms));
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  function randInt(n) { return Math.floor(Math.random() * n); }
-  function shuffleArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = randInt(i + 1);
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+  const sleep = ms => new Promise(r=>setTimeout(r,ms));
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+  function randInt(n){ return Math.floor(Math.random()*n); }
+  function shuffleArray(arr){
+    for (let i=arr.length-1;i>0;i--){
+      const j = randInt(i+1); [arr[i],arr[j]] = [arr[j],arr[i]];
     }
   }
-  function formatRunTime(ms) {
-    const s = Math.floor(ms / 1000);
-    const mm = String(Math.floor(s / 60)).padStart(2,'0');
-    const ss = String(s % 60).padStart(2,'0');
-    return `${mm}:${ss}`;
-  }
-  const words1to19 = ["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
-  const tensWords = ["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+  const words1to19=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+  const tensWords=["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
   function numberToWords(n){
-    if (n < 20) return words1to19[n];
-    if (n < 100) {
-      const t = Math.floor(n/10), r = n%10;
-      return tensWords[t] + (r? `-${words1to19[r]}` : "");
-    }
-    if (n < 1000) {
-      const h = Math.floor(n/100), r = n%100;
-      return words1to19[h] + " hundred" + (r? ` ${numberToWords(r)}`:"");
-    }
-    return String(n); // fallback
+    if(n<20)return words1to19[n];
+    if(n<100){ const t=Math.floor(n/10),r=n%10; return tensWords[t]+(r?`-${words1to19[r]}`:"");}
+    return String(n);
   }
 
-  function setTheme(theme) {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-      themeBtn.textContent = '☀︎';
-    } else {
-      root.classList.remove('dark');
-      themeBtn.textContent = '🌙';
-    }
+  function setTheme(theme){
+    const root=document.documentElement;
+    if(theme==='dark'){ root.classList.add('dark'); setMoon(); }
+    else { root.classList.remove('dark'); setSun(); }
     sessionStorage.setItem('jumbl-theme', theme);
   }
-  function toggleTheme() {
-    const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-    setTheme(next);
+  function toggleTheme(){
+    setTheme(document.documentElement.classList.contains('dark')?'light':'dark');
+  }
+  function setSun(){
+    themeIcon.innerHTML = '<path d="M12 4.75a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 12 4.75Zm6.364 2.386a.75.75 0 0 1 1.06 1.06l-.354.354a.75.75 0 1 1-1.06-1.06l.354-.354ZM18.75 12a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75ZM6.99 7.49a.75.75 0 0 1-1.06 1.06l-.354-.354a.75.75 0 0 1 1.06-1.06l.354.354ZM12 7.5A4.5 4.5 0 1 1 7.5 12 4.505 4.505 0 0 1 12 7.5Zm0 9.75a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0v-.5a.75.75 0 0 1 .75-.75Zm-6.364-2.386a.75.75 0 1 1-1.06-1.06l.354-.354a.75.75 0 0 1 1.06 1.06l-.354.354ZM4.75 12a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5a.75.75 0 0 1 .75.75Zm12.26 3.45a.75.75 0 0 1 1.06 0l.354.354a.75.75 0 0 1-1.06 1.06l-.354-.354a.75.75 0 0 1 0-1.06Z"/>';
+  }
+  function setMoon(){
+    themeIcon.innerHTML = '<path d="M20.354 14.354a8.25 8.25 0 1 1-10.708-10.71 7 7 0 1 0 10.708 10.71Z"/>';
   }
 
-  // ===== Data I/O =====
-  async function loadWordList() {
+  // ===== Data I/O (two files) =====
+  async function loadWordLists(){
     fetchModal.classList.add('show');
-    fetchStatus.textContent = 'Fetching guesses.txt…';
+    fetchStatus.textContent = 'Fetching lists…';
     retryBtn.disabled = true;
+    try{
+      const [ansRes, guessRes] = await Promise.all([
+        fetch('answers.txt',{cache:'no-store'}),
+        fetch('guesses.txt',{cache:'no-store'})
+      ]);
+      if(!ansRes.ok) throw new Error(`answers.txt HTTP ${ansRes.status}`);
+      if(!guessRes.ok) throw new Error(`guesses.txt HTTP ${guessRes.status}`);
 
-    try {
-      const res = await fetch('guesses.txt', { cache: 'no-store' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const text = await res.text();
-      const lines = text.split(/\r?\n/).map(s => s.trim().toUpperCase()).filter(Boolean);
-      const filtered = lines.filter(w => /^[A-Z]{5}$/.test(w));
-      ACCEPTED_SET = new Set(filtered);
-      if (ACCEPTED_SET.size === 0) throw new Error('Empty word list');
-      fetchStatus.textContent = `Loaded ${ACCEPTED_SET.size} words. Ready!`;
-      await sleep(400);
+      const [ansText, guessText] = await Promise.all([ansRes.text(), guessRes.text()]);
+      const toWords = (t)=> t.split(/\r?\n/).map(s=>s.trim().toUpperCase()).filter(w=>/^[A-Z]{5}$/.test(w));
+      ANSWER_POOL = toWords(ansText);
+      ACCEPTED_SET = new Set(toWords(guessText));
+
+      if(ANSWER_POOL.length===0) throw new Error('answers.txt is empty');
+      if(ACCEPTED_SET.size===0) throw new Error('guesses.txt is empty');
+
+      fetchStatus.textContent = `Loaded ${ANSWER_POOL.length} answer words and ${ACCEPTED_SET.size} valid guesses.`;
+      await sleep(350);
       fetchModal.classList.remove('show');
       introModal.classList.add('show');
-    } catch (err) {
-      fetchStatus.textContent = `Failed to load word list: ${err.message}. Check that guesses.txt is present and try again.`;
+    }catch(err){
+      fetchStatus.textContent = `Failed: ${err.message}. Ensure both files exist next to index.html.`;
       retryBtn.disabled = false;
     }
   }
 
-  // ===== Game Flow =====
-  function resetState() {
+  // ===== Game loop =====
+  function resetState(){
     lives = STARTING_LIVES;
-    level = 1;
-    gameStartAt = performance.now();
-    current = [];
-    bank = [];
+    level = 1;         // start at level 1
+    current = []; bank = [];
   }
 
-  function startGame() {
+  function startGame(){
     resetState();
     introModal.classList.remove('show');
     gameOverModal.classList.remove('show');
-    startRunTimer();
-    nextWord(true);
+    nextWord(false);   // don't increment; start on lvl 1
     renderUI();
   }
 
-  function pickBankFromAccepted() {
-    // Convert set to array if needed lazily
-    const pool = Array.from(ACCEPTED_SET);
-    const word = pool[randInt(pool.length)]; // already uppercase
+  function pickBankFromAnswers(){
+    const word = ANSWER_POOL[randInt(ANSWER_POOL.length)];
     const letters = word.split('');
     shuffleArray(letters);
-    bank = letters.map(ch => ({ ch, used: false }));
+    bank = letters.map(ch=>({ch, used:false}));
   }
 
-  function nextWord(isNewLevel) {
+  function nextWord(incrementLevel){
     stopWordTimer();
+    if(incrementLevel) level++;
     current = [];
-    // Keep level same on timeout; increment only on correct -> nextWord(true)
-    if (isNewLevel) level++;
-    pickBankFromAccepted();
+    pickBankFromAnswers();
     startWordTimer();
     renderUI();
   }
 
-  function startRunTimer() {
-    stopRunTimer();
-    runTimerInterval = setInterval(() => {
-      const elapsed = performance.now() - gameStartAt;
-      runTimerEl.textContent = formatRunTime(elapsed);
-    }, 250);
-  }
-  function stopRunTimer() {
-    if (runTimerInterval) clearInterval(runTimerInterval);
-    runTimerInterval = null;
-  }
-
-  function startWordTimer() {
-    wordDeadlineAt = performance.now() + COUNTDOWN_SECONDS * 1000;
+  function startWordTimer(){
+    wordDeadlineAt = performance.now() + COUNTDOWN_SECONDS*1000;
     tickWordTimer();
     wordTimerInterval = setInterval(tickWordTimer, 100);
   }
-  function stopWordTimer() {
-    if (wordTimerInterval) clearInterval(wordTimerInterval);
-    wordTimerInterval = null;
-  }
-  function tickWordTimer() {
+  function stopWordTimer(){ if(wordTimerInterval) clearInterval(wordTimerInterval); wordTimerInterval=null; }
+  function tickWordTimer(){
     const now = performance.now();
-    const total = COUNTDOWN_SECONDS * 1000;
+    const total = COUNTDOWN_SECONDS*1000;
     const remain = clamp(wordDeadlineAt - now, 0, total);
-    const ratio = remain / total;
-    cdFill.style.width = `${ratio * 100}%`;
-    cdText.textContent = (remain / 1000).toFixed(1) + 's';
-    if (remain <= 0) onWordTimeout();
+    const ratio = remain/total;
+    cdFill.style.width = `${ratio*100}%`;
+    cdText.textContent = (remain/1000).toFixed(1)+'s';
+    if(remain<=0) onWordTimeout();
   }
 
-  function onWordTimeout() {
+  function onWordTimeout(){
     stopWordTimer();
-    lives = Math.max(0, lives - 1);
-    if (lives === 0) {
-      gameOver();
-      return;
-    }
-    // Keep same level number on timeout; load different letter bank
-    current = [];
-    pickBankFromAccepted();
-    startWordTimer();
-    renderUI();
+    lives = Math.max(0, lives-1);
+    if(lives===0){ gameOver(); return; }
+    current = []; pickBankFromAnswers(); startWordTimer(); renderUI();
   }
 
-  function gameOver() {
+  function gameOver(){
     stopWordTimer();
-    stopRunTimer();
-    const elapsed = performance.now() - gameStartAt;
-    const levelsCompleted = Math.max(0, level - 1);
+    const levelsCompleted = Math.max(0, level-1);
     document.getElementById('summaryText').textContent =
-      `You reached level ${levelsCompleted} in ${formatRunTime(elapsed)}.`;
+      `You reached level ${levelsCompleted}.`;
     gameOverModal.classList.add('show');
   }
 
-  // ===== Input Handling =====
-  function handleLetterTap(letter, bankIndex) {
-    if (isAnimating) return;
-    if (bank[bankIndex]?.used) return;
-    if (current.length >= 5) return;
+  // ===== Input =====
+  function handleLetterTap(letter, bankIndex){
+    if(isAnimating) return;
+    if(bank[bankIndex]?.used) return;
+    if(current.length>=5) return;
     bank[bankIndex].used = true;
-    current.push({ ch: letter, bankIndex });
+    current.push({ch:letter, bankIndex});
     renderUI();
     autoSubmitIfFull();
   }
-
-  function handleBackspace() {
-    if (isAnimating) return;
-    if (current.length === 0) return;
-    const last = current.pop();
-    if (last && bank[last.bankIndex]) bank[last.bankIndex].used = false;
+  function handleBackspace(){
+    if(isAnimating) return;
+    if(!current.length) return;
+    const last=current.pop();
+    if(last && bank[last.bankIndex]) bank[last.bankIndex].used=false;
     renderUI();
   }
-
-  function shuffleBank() {
-    // Preserve used positions; reshuffle only unused letters among their slots
-    const unused = [];
-    const positions = [];
-    bank.forEach((b, i) => {
-      if (!b.used) { unused.push(b.ch); positions.push(i); }
-    });
-    shuffleArray(unused);
-    positions.forEach((pos, idx) => {
-      bank[pos].ch = unused[idx];
-    });
+  function shuffleBank(){
+    const unused=[], pos=[];
+    bank.forEach((b,i)=>{ if(!b.used){ unused.push(b.ch); pos.push(i);} });
+    shuffleArray(unused); pos.forEach((p,i)=> bank[p].ch = unused[i]);
     renderUI();
   }
-
-  function autoSubmitIfFull() {
-    if (current.length === 5) {
-      const word = current.map(x => x.ch).join('');
+  function autoSubmitIfFull(){
+    if(current.length===5){
+      const word = current.map(x=>x.ch).join('');
       submitGuess(word);
     }
   }
-
-  async function submitGuess(word) {
-    if (isAnimating) return;
+  async function submitGuess(word){
+    if(isAnimating) return;
     const upper = word.toUpperCase();
-    if (ACCEPTED_SET.has(upper)) {
-      // Correct: play animation, increment level, new bank, reset per-word countdown
+    if(ACCEPTED_SET.has(upper)){
       isAnimating = true;
-      // Mark tiles correct animation
-      document.querySelectorAll('.tile').forEach(t => t.classList.add('correct'));
-      await sleep(240);
-      isAnimating = false;
-      nextWord(true); // increments level
-      renderUI();
-    } else {
-      // Invalid: shake and clear, no life lost, countdown continues
+      document.querySelectorAll('.tile').forEach(t=>t.classList.add('correct'));
+      await sleep(240); isAnimating=false;
+      nextWord(true); renderUI();
+    }else{
       isAnimating = true;
-      answerRow.classList.add('shake');
-      await sleep(260);
-      answerRow.classList.remove('shake');
-      // clear current & re-enable used letters
-      while (current.length) {
-        const x = current.pop();
-        if (bank[x.bankIndex]) bank[x.bankIndex].used = false;
-      }
-      isAnimating = false;
-      renderUI();
+      answerRow.classList.add('shake'); await sleep(260); answerRow.classList.remove('shake');
+      while(current.length){ const x=current.pop(); if(bank[x.bankIndex]) bank[x.bankIndex].used=false; }
+      isAnimating = false; renderUI();
     }
   }
 
-  // ===== Rendering =====
-  function renderUI() {
-    // Lives
-    livesRow.innerHTML = '';
-    for (let i = 0; i < STARTING_LIVES; i++) {
-      const d = document.createElement('div');
-      d.className = 'dot' + (i < lives ? ' active' : '');
+  // ===== Render =====
+  function renderUI(){
+    // Lives (rounded squares)
+    livesRow.innerHTML='';
+    for(let i=0;i<STARTING_LIVES;i++){
+      const d=document.createElement('div');
+      d.className='life'+(i<lives?' on':'');
       livesRow.appendChild(d);
     }
-    // Level label (lvl one, lvl two…)
-    const shown = Math.max(1, level);
-    levelLabel.textContent = 'lvl ' + numberToWords(shown);
+    levelLabel.textContent='lvl '+numberToWords(Math.max(1,level));
 
     // Answer row
-    answerRow.innerHTML = '';
-    for (let i = 0; i < 5; i++) {
-      const tile = document.createElement('div');
-      tile.className = 'tile' + (current[i] ? ' filled' : '');
-      tile.textContent = current[i]?.ch ?? '';
-      answerRow.appendChild(tile);
+    answerRow.innerHTML='';
+    for(let i=0;i<5;i++){
+      const t=document.createElement('div');
+      t.className='tile'+(current[i]?' filled':'');
+      t.textContent=current[i]?.ch??'';
+      answerRow.appendChild(t);
     }
 
     // Bank
-    bankRow.innerHTML = '';
-    bank.forEach((b, idx) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = b.ch;
-      btn.disabled = b.used;
-      btn.setAttribute('aria-label', `Use letter ${b.ch}`);
-      btn.addEventListener('click', () => handleLetterTap(b.ch, idx));
+    bankRow.innerHTML='';
+    bank.forEach((b,idx)=>{
+      const btn=document.createElement('button');
+      btn.type='button'; btn.textContent=b.ch; btn.disabled=b.used;
+      btn.setAttribute('aria-label',`Use letter ${b.ch}`);
+      btn.addEventListener('click',()=>handleLetterTap(b.ch, idx));
       bankRow.appendChild(btn);
     });
 
-    // Controls
-    shuffleBtn.onclick = shuffleBank;
-    backBtn.onclick = handleBackspace;
+    shuffleBtn.onclick=shuffleBank;
+    backBtn.onclick=handleBackspace;
   }
 
   // ===== Wiring =====
   playBtn.addEventListener('click', startGame);
-  againBtn.addEventListener('click', () => {
-    gameOverModal.classList.remove('show');
-    startGame();
-  });
-  retryBtn.addEventListener('click', loadWordList);
+  againBtn.addEventListener('click', ()=>{ gameOverModal.classList.remove('show'); startGame(); });
+  retryBtn.addEventListener('click', loadWordLists);
   themeBtn.addEventListener('click', toggleTheme);
 
-  // Start with theme
-  setTheme(sessionStorage.getItem('jumbl-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+  // Theme boot (SVG icon swap)
+  setTheme(sessionStorage.getItem('jumbl-theme')
+    || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'));
 
-  // Prevent pinch-zoom on fast taps (iOS)
-  let lastTouch = 0;
-  document.addEventListener('touchend', (e) => {
-    const now = Date.now();
-    if (now - lastTouch <= 300) e.preventDefault();
-    lastTouch = now;
-  }, { passive: false });
+  // Prevent accidental double-tap zoom on iOS
+  let lastTouch=0;
+  document.addEventListener('touchend',(e)=>{
+    const now=Date.now(); if(now-lastTouch<=300) e.preventDefault(); lastTouch=now;
+  },{passive:false});
 
-  // Keyboard support (optional for desktop testing)
-  document.addEventListener('keydown', (e) => {
-    if (!introModal.classList.contains('show') && !gameOverModal.classList.contains('show') && !fetchModal.classList.contains('show')) {
-      const k = e.key.toUpperCase();
-      if (/^[A-Z]$/.test(k)) {
-        // If letter exists and there is an unused instance in bank, tap first unused matching
-        const idx = bank.findIndex((b, i) => !b.used && b.ch === k);
-        if (idx !== -1) handleLetterTap(k, idx);
-      } else if (e.key === 'Backspace') {
-        handleBackspace();
-      } else if (e.key === ' ') {
-        e.preventDefault();
-        shuffleBank();
-      }
-    }
+  // Optional keyboard for desktop testing
+  document.addEventListener('keydown',(e)=>{
+    if([introModal, gameOverModal, fetchModal].some(m=>m.classList.contains('show'))) return;
+    const k=e.key.toUpperCase();
+    if(/^[A-Z]$/.test(k)){
+      const idx=bank.findIndex(b=>!b.used && b.ch===k);
+      if(idx!==-1) handleLetterTap(k, idx);
+    } else if(e.key==='Backspace'){ handleBackspace(); }
+    else if(e.key===' '){ e.preventDefault(); shuffleBank(); }
   });
 
-  // Boot: load word list
-  loadWordList();
+  // Boot
+  loadWordLists();
 })();
 </script>
 </body>
