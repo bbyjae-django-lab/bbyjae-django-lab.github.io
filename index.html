@@ -9,7 +9,7 @@
   :root{
     --bg:#f7f7f9; --fg:#1f2328; --muted:#6a6f76;
     --tile:#ffffff; --tile-empty:#e9ebef;
-    --accent:#6b8afd; --ok:#35c47c; /* gradient */
+    --accent:#6b8afd; --ok:#35c47c;
     --accent-weak:#c9d4ff;
     --danger:#ff5c7a;
     --shadow:0 6px 20px rgba(0,0,0,.08);
@@ -46,7 +46,6 @@
     max-width:600px; margin:0 auto;
   }
 
-  /* Transparent header (no bar) */
   header{
     display:grid; grid-template-columns: 1fr auto 1fr;
     align-items:center; gap:8px;
@@ -59,6 +58,7 @@
   .theme-toggle{
     justify-self:end; border:none; background:transparent;
     padding:6px; border-radius:999px;
+    touch-action: manipulation;
   }
   .theme-toggle svg{
     width:28px; height:28px; display:block;
@@ -69,74 +69,47 @@
 
   /* Lives: rounded squares */
   .lives{ display:flex; justify-content:center; gap:8px; }
-  .life{
-    width:12px; height:12px; border-radius:6px;
-    background:var(--accent-weak);
-  }
+  .life{ width:12px; height:12px; border-radius:6px; background:var(--accent-weak); }
   .life.on{ background:var(--accent); }
 
-  /* Level label (left only) */
-  .levelbar{
-    display:flex; align-items:center; justify-content:flex-start;
-    font-size:14px; color:var(--muted); padding:0 2px;
-  }
+  .levelbar{ display:flex; align-items:center; justify-content:flex-start; font-size:14px; color:var(--muted); padding:0 2px; }
 
-  /* Countdown: big bar, number inside (left) */
-  .countdown{
-    background:var(--tile); border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    padding:10px 12px 12px;
-  }
-  .cd-bar{
-    position:relative; height:16px; border-radius:12px; overflow:hidden;
-    background:var(--tile-empty);
-  }
-  .cd-fill{
-    position:absolute; inset:0 auto 0 0; width:0%;
-    background:linear-gradient(90deg, var(--accent), var(--ok));
-    transition: width 100ms linear;
-  }
-  .cd-text{
-    position:absolute; left:10px; top:50%; transform:translateY(-50%);
-    font-variant-numeric: tabular-nums;
-    font-size:13px; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35);
-    pointer-events:none;
-  }
+  /* Countdown */
+  .countdown{ background:var(--tile); border-radius:var(--radius); box-shadow:var(--shadow); padding:10px 12px 12px; }
+  .cd-bar{ position:relative; height:16px; border-radius:12px; overflow:hidden; background:var(--tile-empty); }
+  .cd-fill{ position:absolute; inset:0 auto 0 0; width:0%; background:linear-gradient(90deg, var(--accent), var(--ok)); transition: width 100ms linear; will-change: width; }
+  .cd-text{ position:absolute; left:10px; top:50%; transform:translateY(-50%); font-variant-numeric: tabular-nums; font-size:13px; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); pointer-events:none; }
 
-  .answer-row{
-    display:grid; grid-template-columns:repeat(5,1fr);
-    gap:8px; margin-top:8px; /* closer to bar */
-  }
+  .answer-row{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:8px; }
   .tile{
     aspect-ratio:1/1; display:grid; place-items:center;
     border-radius:14px; background:var(--tile-empty);
     color:var(--fg); font-size:clamp(22px,7vw,30px);
     font-weight:800; letter-spacing:1px; box-shadow:var(--shadow);
     transition: background .2s ease, transform .2s ease, opacity .2s ease;
+    will-change: transform, opacity;
+    user-select:none; -webkit-user-select:none;
   }
   .tile.filled{ background:var(--tile); }
   .tile.correct{ animation: correctGrow 240ms ease; }
   .answer-row.shake{ animation: shake 260ms ease; }
 
-  .bank{
-    display:grid; grid-template-columns:repeat(5,1fr);
-    gap:10px; margin-top:6px;
-  }
+  .bank{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:6px; }
   .bank button{
     aspect-ratio:1/1; border:none; border-radius:14px;
     background:var(--tile); color:var(--fg);
     font-size:clamp(20px,7vw,28px); font-weight:900; letter-spacing:1px;
     box-shadow:var(--shadow);
+    touch-action: manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
   }
   .bank button:disabled{ opacity:.35; transform:scale(.97); }
 
-  .controls{
-    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:2px;
-  }
+  .controls{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:2px; }
   .controls button{
     border:none; border-radius:14px; background:var(--tile); color:var(--fg);
     font-size:clamp(16px,4.5vw,18px); font-weight:800; box-shadow:var(--shadow);
-    padding:16px; min-height:64px; /* bigger/squarer */
+    padding:16px; min-height:64px;
+    touch-action: manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
   }
 
   /* Modals */
@@ -153,16 +126,12 @@
   .sheet h2{ margin:0; font-size:22px; }
   .sheet .content{ overflow:auto; -webkit-overflow-scrolling:touch; font-size:15px; color:var(--muted); line-height:1.5; }
   .sheet .actions{ display:grid; gap:8px; }
-  .gbtn{
-    border:none; border-radius:14px; color:white; padding:14px; font-weight:800;
-    background:linear-gradient(90deg, var(--accent), var(--ok));
-  }
+  .gbtn{ border:none; border-radius:14px; color:white; padding:14px; font-weight:800; background:linear-gradient(90deg, var(--accent), var(--ok)); }
 
   .hidden{ display:none !important; }
 
-  /* Animations */
   @keyframes correctGrow{ 0%{transform:scale(1);opacity:1;}60%{transform:scale(1.2);opacity:.9;}100%{transform:scale(1);opacity:1;} }
-  @keyframes shake{ 0%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0);} }
+  @keyframes shake{ 0%{transform:translateX(0);}20%{-webkit-transform:translateX(-8px);transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0);} }
 
   button{ min-height:44px; }
 </style>
@@ -178,7 +147,6 @@
     </header>
 
     <div class="lives" id="livesRow" aria-label="Lives"></div>
-
     <div class="levelbar"><div class="level" id="levelLabel">lvl one</div></div>
 
     <div class="countdown" aria-live="polite">
@@ -189,7 +157,6 @@
     </div>
 
     <div class="answer-row" id="answerRow" aria-label="Your guess"></div>
-
     <div class="bank" id="bankRow" aria-label="Letter bank"></div>
 
     <div class="controls">
@@ -235,13 +202,13 @@
 <script>
 (()=> {
   // ===== Config =====
-  const COUNTDOWN_SECONDS = 30;     // per-word timer
+  const COUNTDOWN_SECONDS = 30;
   const STARTING_LIVES   = 3;
 
   // ===== State =====
   let ACCEPTED_SET = new Set();     // guesses.txt
   let ANSWER_POOL  = [];            // answers.txt (array)
-  let ANSWER_SET   = new Set();     // answers.txt (set) – used for acceptance union
+  let ANSWER_SET   = new Set();     // answers.txt (set)
   let bank = [];                    // [{ch, used}]
   let current = [];                 // [{ch, bankIndex}]
   let lives = STARTING_LIVES;
@@ -285,7 +252,7 @@
   function setTheme(t){ const r=document.documentElement; if(t==='dark'){ r.classList.add('dark'); setMoon(); } else { r.classList.remove('dark'); setSun(); } sessionStorage.setItem('jumbl-theme',t); }
   function toggleTheme(){ setTheme(document.documentElement.classList.contains('dark')?'light':'dark'); }
 
-  // ===== Data I/O (two files) =====
+  // ===== Data I/O =====
   async function loadWordLists(){
     fetchModal.classList.add('show'); fetchStatus.textContent='Fetching lists…'; retryBtn.disabled=true;
     try{
@@ -307,7 +274,7 @@
       if(!ACCEPTED_SET.size)  throw new Error('guesses.txt is empty');
 
       fetchStatus.textContent = `Loaded ${ANSWER_POOL.length} answers, ${ACCEPTED_SET.size} guesses.`;
-      await sleep(300);
+      await sleep(250);
       fetchModal.classList.remove('show');
       introModal.classList.add('show');
     }catch(err){
@@ -370,18 +337,15 @@
   async function submitGuess(word){
     if(isAnimating) return;
     const upper = word.toUpperCase();
-
-    // Accept if present in guesses.txt OR answers.txt
     const isValid = ACCEPTED_SET.has(upper) || ANSWER_SET.has(upper);
-
     if(isValid){
       isAnimating=true;
       document.querySelectorAll('.tile').forEach(t=>t.classList.add('correct'));
-      await sleep(240); isAnimating=false;
+      await sleep(200); isAnimating=false;
       nextWord(true); renderUI();
     }else{
       isAnimating=true;
-      answerRow.classList.add('shake'); await sleep(260); answerRow.classList.remove('shake');
+      answerRow.classList.add('shake'); await sleep(240); answerRow.classList.remove('shake');
       while(current.length){ const x=current.pop(); if(bank[x.bankIndex]) bank[x.bankIndex].used=false; }
       isAnimating=false; renderUI();
     }
@@ -404,33 +368,33 @@
       t.textContent=current[i]?.ch??''; answerRow.appendChild(t);
     }
 
-    // Bank
+    // Bank (no per-button listeners; use delegation)
     bankRow.innerHTML='';
     bank.forEach((b,idx)=>{
       const btn=document.createElement('button');
       btn.type='button'; btn.textContent=b.ch; btn.disabled=b.used;
+      btn.dataset.index = String(idx);
       btn.setAttribute('aria-label',`Use letter ${b.ch}`);
-      btn.addEventListener('click',()=>handleLetterTap(b.ch, idx));
       bankRow.appendChild(btn);
     });
-
-    shuffleBtn.onclick=shuffleBank;
-    backBtn.onclick=handleBackspace;
   }
 
-  // ===== Wiring =====
-  playBtn.addEventListener('click', startGame);
-  againBtn.addEventListener('click', ()=>{ gameOverModal.classList.remove('show'); startGame(); });
-  retryBtn.addEventListener('click', loadWordLists);
-  themeBtn.addEventListener('click', toggleTheme);
+  // ===== Wiring (low-latency pointer events) =====
+  // Letter bank: single delegated handler, fires on pointerdown
+  bankRow.addEventListener('pointerdown', (e)=>{
+    const btn = e.target.closest('button');
+    if(!btn || btn.disabled) return;
+    const idx = Number(btn.dataset.index);
+    if(Number.isInteger(idx)) handleLetterTap(bank[idx].ch, idx);
+  }, {passive:true});
 
-  // Theme boot (SVG icon swap)
-  setTheme(sessionStorage.getItem('jumbl-theme')
-    || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'));
-
-  // Prevent double-tap zoom on iOS
-  let lastTouch=0;
-  document.addEventListener('touchend',(e)=>{ const now=Date.now(); if(now-lastTouch<=300) e.preventDefault(); lastTouch=now; },{passive:false});
+  // Controls on pointerdown (immediate)
+  shuffleBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); shuffleBank(); }, {passive:false});
+  backBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); handleBackspace(); }, {passive:false});
+  playBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); startGame(); }, {passive:false});
+  againBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); gameOverModal.classList.remove('show'); startGame(); }, {passive:false});
+  retryBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); loadWordLists(); }, {passive:false});
+  themeBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); toggleTheme(); }, {passive:false});
 
   // Optional keyboard (desktop)
   document.addEventListener('keydown',(e)=>{
@@ -442,6 +406,10 @@
     } else if(e.key==='Backspace'){ handleBackspace(); }
     else if(e.key===' '){ e.preventDefault(); shuffleBank(); }
   });
+
+  // Theme boot
+  setTheme(sessionStorage.getItem('jumbl-theme')
+    || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'));
 
   // Boot
   loadWordLists();
