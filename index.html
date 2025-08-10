@@ -2,17 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1, viewport-fit=cover"
-/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <title>JUMBL</title>
 <style>
   :root{
     --bg:#f7f7f9; --fg:#1f2328; --muted:#6a6f76;
     --tile:#ffffff; --tile-empty:#e9ebef;
-    --accent:#6b8afd; --ok:#35c47c;           /* gradient endpoints */
+    --accent:#6b8afd; --ok:#35c47c; /* gradient */
     --accent-weak:#c9d4ff;
     --danger:#ff5c7a;
     --shadow:0 6px 20px rgba(0,0,0,.08);
@@ -49,7 +46,7 @@
     max-width:600px; margin:0 auto;
   }
 
-  /* Transparent header: no background, flows with page */
+  /* Transparent header (no bar) */
   header{
     display:grid; grid-template-columns: 1fr auto 1fr;
     align-items:center; gap:8px;
@@ -108,7 +105,7 @@
 
   .answer-row{
     display:grid; grid-template-columns:repeat(5,1fr);
-    gap:8px; margin-top:8px;   /* closer to bar */
+    gap:8px; margin-top:8px; /* closer to bar */
   }
   .tile{
     aspect-ratio:1/1; display:grid; place-items:center;
@@ -139,7 +136,7 @@
   .controls button{
     border:none; border-radius:14px; background:var(--tile); color:var(--fg);
     font-size:clamp(16px,4.5vw,18px); font-weight:800; box-shadow:var(--shadow);
-    padding:16px; min-height:64px;          /* larger/squarer */
+    padding:16px; min-height:64px; /* bigger/squarer */
   }
 
   /* Modals */
@@ -164,19 +161,8 @@
   .hidden{ display:none !important; }
 
   /* Animations */
-  @keyframes correctGrow{
-    0%{ transform:scale(1); opacity:1;}
-    60%{ transform:scale(1.2); opacity:.9;}
-    100%{ transform:scale(1); opacity:1;}
-  }
-  @keyframes shake{
-    0%{ transform:translateX(0);}
-    20%{ transform:translateX(-8px);}
-    40%{ transform:translateX(8px);}
-    60%{ transform:translateX(-6px);}
-    80%{ transform:translateX(6px);}
-    100%{ transform:translateX(0);}
-  }
+  @keyframes correctGrow{ 0%{transform:scale(1);opacity:1;}60%{transform:scale(1.2);opacity:.9;}100%{transform:scale(1);opacity:1;} }
+  @keyframes shake{ 0%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0);} }
 
   button{ min-height:44px; }
 </style>
@@ -187,7 +173,6 @@
       <div></div>
       <div class="title">JUMBL</div>
       <button id="themeBtn" class="theme-toggle" aria-label="Toggle theme">
-        <!-- default icon swapped by JS -->
         <svg id="themeIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"></svg>
       </button>
     </header>
@@ -223,9 +208,7 @@
         A correct word advances the level and resets the timer.<br/><br/>
         <strong>30s per word • 3 lives</strong>
       </div>
-      <div class="actions">
-        <button id="playBtn" class="gbtn">Play</button>
-      </div>
+      <div class="actions"><button id="playBtn" class="gbtn">Play</button></div>
     </div>
   </div>
 
@@ -251,13 +234,14 @@
 
 <script>
 (()=> {
-  // ===== Config (updated) =====
+  // ===== Config =====
   const COUNTDOWN_SECONDS = 30;     // per-word timer
   const STARTING_LIVES   = 3;
 
   // ===== State =====
   let ACCEPTED_SET = new Set();     // guesses.txt
   let ANSWER_POOL  = [];            // answers.txt (array)
+  let ANSWER_SET   = new Set();     // answers.txt (set) – used for acceptance union
   let bank = [];                    // [{ch, used}]
   let current = [];                 // [{ch, bankIndex}]
   let lives = STARTING_LIVES;
@@ -290,41 +274,20 @@
   // ===== Utilities =====
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
   const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-  function randInt(n){ return Math.floor(Math.random()*n); }
-  function shuffleArray(arr){
-    for (let i=arr.length-1;i>0;i--){
-      const j = randInt(i+1); [arr[i],arr[j]] = [arr[j],arr[i]];
-    }
-  }
+  const randInt = n => Math.floor(Math.random()*n);
+  function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=randInt(i+1); [a[i],a[j]]=[a[j],a[i]]; } }
   const words1to19=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
   const tensWords=["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
-  function numberToWords(n){
-    if(n<20)return words1to19[n];
-    if(n<100){ const t=Math.floor(n/10),r=n%10; return tensWords[t]+(r?`-${words1to19[r]}`:"");}
-    return String(n);
-  }
+  const numberToWords=n=> n<20?words1to19[n]:n<100?(tensWords[Math.floor(n/10)]+(n%10?`-${words1to19[n%10]}`:"")):String(n);
 
-  function setTheme(theme){
-    const root=document.documentElement;
-    if(theme==='dark'){ root.classList.add('dark'); setMoon(); }
-    else { root.classList.remove('dark'); setSun(); }
-    sessionStorage.setItem('jumbl-theme', theme);
-  }
-  function toggleTheme(){
-    setTheme(document.documentElement.classList.contains('dark')?'light':'dark');
-  }
-  function setSun(){
-    themeIcon.innerHTML = '<path d="M12 4.75a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 12 4.75Zm6.364 2.386a.75.75 0 0 1 1.06 1.06l-.354.354a.75.75 0 1 1-1.06-1.06l.354-.354ZM18.75 12a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75ZM6.99 7.49a.75.75 0 0 1-1.06 1.06l-.354-.354a.75.75 0 0 1 1.06-1.06l.354.354ZM12 7.5A4.5 4.5 0 1 1 7.5 12 4.505 4.505 0 0 1 12 7.5Zm0 9.75a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0v-.5a.75.75 0 0 1 .75-.75Zm-6.364-2.386a.75.75 0 1 1-1.06-1.06l.354-.354a.75.75 0 0 1 1.06 1.06l-.354.354ZM4.75 12a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5a.75.75 0 0 1 .75.75Zm12.26 3.45a.75.75 0 0 1 1.06 0l.354.354a.75.75 0 0 1-1.06 1.06l-.354-.354a.75.75 0 0 1 0-1.06Z"/>';
-  }
-  function setMoon(){
-    themeIcon.innerHTML = '<path d="M20.354 14.354a8.25 8.25 0 1 1-10.708-10.71 7 7 0 1 0 10.708 10.71Z"/>';
-  }
+  function setSun(){ themeIcon.innerHTML='<path d="M12 4.75a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 12 4.75Zm6.364 2.386a.75.75 0 0 1 1.06 1.06l-.354.354a.75.75 0 1 1-1.06-1.06l.354-.354ZM18.75 12a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75ZM6.99 7.49a.75.75 0 0 1-1.06 1.06l-.354-.354a.75.75 0 0 1 1.06-1.06l.354.354ZM12 7.5A4.5 4.5 0 1 1 7.5 12 4.505 4.505 0 0 1 12 7.5Zm0 9.75a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0v-.5a.75.75 0 0 1 .75-.75Zm-6.364-2.386a.75.75 0 1 1-1.06-1.06l.354-.354a.75.75 0 0 1 1.06 1.06l-.354.354ZM4.75 12a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5a.75.75 0 0 1 .75.75Zm12.26 3.45a.75.75 0 0 1 1.06 0l.354.354a.75.75 0 0 1-1.06 1.06l-.354-.354a.75.75 0 0 1 0-1.06Z"/>'; }
+  function setMoon(){ themeIcon.innerHTML='<path d="M20.354 14.354a8.25 8.25 0 1 1-10.708-10.71 7 7 0 1 0 10.708 10.71Z"/>'; }
+  function setTheme(t){ const r=document.documentElement; if(t==='dark'){ r.classList.add('dark'); setMoon(); } else { r.classList.remove('dark'); setSun(); } sessionStorage.setItem('jumbl-theme',t); }
+  function toggleTheme(){ setTheme(document.documentElement.classList.contains('dark')?'light':'dark'); }
 
   // ===== Data I/O (two files) =====
   async function loadWordLists(){
-    fetchModal.classList.add('show');
-    fetchStatus.textContent = 'Fetching lists…';
-    retryBtn.disabled = true;
+    fetchModal.classList.add('show'); fetchStatus.textContent='Fetching lists…'; retryBtn.disabled=true;
     try{
       const [ansRes, guessRes] = await Promise.all([
         fetch('answers.txt',{cache:'no-store'}),
@@ -334,82 +297,51 @@
       if(!guessRes.ok) throw new Error(`guesses.txt HTTP ${guessRes.status}`);
 
       const [ansText, guessText] = await Promise.all([ansRes.text(), guessRes.text()]);
-      const toWords = (t)=> t.split(/\r?\n/).map(s=>s.trim().toUpperCase()).filter(w=>/^[A-Z]{5}$/.test(w));
+      const toWords = t => t.split(/\r?\n/).map(s=>s.trim().toUpperCase()).filter(w=>/^[A-Z]{5}$/.test(w));
+
       ANSWER_POOL = toWords(ansText);
-      ACCEPTED_SET = new Set(toWords(guessText));
+      ANSWER_SET  = new Set(ANSWER_POOL);
+      ACCEPTED_SET= new Set(toWords(guessText));
 
-      if(ANSWER_POOL.length===0) throw new Error('answers.txt is empty');
-      if(ACCEPTED_SET.size===0) throw new Error('guesses.txt is empty');
+      if(!ANSWER_POOL.length) throw new Error('answers.txt is empty');
+      if(!ACCEPTED_SET.size)  throw new Error('guesses.txt is empty');
 
-      fetchStatus.textContent = `Loaded ${ANSWER_POOL.length} answer words and ${ACCEPTED_SET.size} valid guesses.`;
-      await sleep(350);
+      fetchStatus.textContent = `Loaded ${ANSWER_POOL.length} answers, ${ACCEPTED_SET.size} guesses.`;
+      await sleep(300);
       fetchModal.classList.remove('show');
       introModal.classList.add('show');
     }catch(err){
-      fetchStatus.textContent = `Failed: ${err.message}. Ensure both files exist next to index.html.`;
-      retryBtn.disabled = false;
+      fetchStatus.textContent = `Failed: ${err.message}. Ensure both files are beside index.html.`;
+      retryBtn.disabled=false;
     }
   }
 
   // ===== Game loop =====
-  function resetState(){
-    lives = STARTING_LIVES;
-    level = 1;         // start at level 1
-    current = []; bank = [];
-  }
-
-  function startGame(){
-    resetState();
-    introModal.classList.remove('show');
-    gameOverModal.classList.remove('show');
-    nextWord(false);   // don't increment; start on lvl 1
-    renderUI();
-  }
+  function resetState(){ lives=STARTING_LIVES; level=1; current=[]; bank=[]; }
+  function startGame(){ resetState(); introModal.classList.remove('show'); gameOverModal.classList.remove('show'); nextWord(false); renderUI(); }
 
   function pickBankFromAnswers(){
     const word = ANSWER_POOL[randInt(ANSWER_POOL.length)];
-    const letters = word.split('');
-    shuffleArray(letters);
-    bank = letters.map(ch=>({ch, used:false}));
+    const letters = word.split(''); shuffleArray(letters);
+    bank = letters.map(ch=>({ch,used:false}));
   }
 
-  function nextWord(incrementLevel){
-    stopWordTimer();
-    if(incrementLevel) level++;
-    current = [];
-    pickBankFromAnswers();
-    startWordTimer();
-    renderUI();
-  }
+  function nextWord(incrementLevel){ stopWordTimer(); if(incrementLevel) level++; current=[]; pickBankFromAnswers(); startWordTimer(); renderUI(); }
 
-  function startWordTimer(){
-    wordDeadlineAt = performance.now() + COUNTDOWN_SECONDS*1000;
-    tickWordTimer();
-    wordTimerInterval = setInterval(tickWordTimer, 100);
-  }
+  function startWordTimer(){ wordDeadlineAt=performance.now()+COUNTDOWN_SECONDS*1000; tickWordTimer(); wordTimerInterval=setInterval(tickWordTimer,100); }
   function stopWordTimer(){ if(wordTimerInterval) clearInterval(wordTimerInterval); wordTimerInterval=null; }
   function tickWordTimer(){
-    const now = performance.now();
-    const total = COUNTDOWN_SECONDS*1000;
-    const remain = clamp(wordDeadlineAt - now, 0, total);
-    const ratio = remain/total;
-    cdFill.style.width = `${ratio*100}%`;
+    const now=performance.now(), total=COUNTDOWN_SECONDS*1000, remain=clamp(wordDeadlineAt-now,0,total);
+    cdFill.style.width = `${(remain/total)*100}%`;
     cdText.textContent = (remain/1000).toFixed(1)+'s';
     if(remain<=0) onWordTimeout();
   }
 
-  function onWordTimeout(){
-    stopWordTimer();
-    lives = Math.max(0, lives-1);
-    if(lives===0){ gameOver(); return; }
-    current = []; pickBankFromAnswers(); startWordTimer(); renderUI();
-  }
-
+  function onWordTimeout(){ stopWordTimer(); lives=Math.max(0,lives-1); if(lives===0){ gameOver(); return; } current=[]; pickBankFromAnswers(); startWordTimer(); renderUI(); }
   function gameOver(){
     stopWordTimer();
-    const levelsCompleted = Math.max(0, level-1);
-    document.getElementById('summaryText').textContent =
-      `You reached level ${levelsCompleted}.`;
+    const levelsCompleted=Math.max(0,level-1);
+    document.getElementById('summaryText').textContent=`You reached level ${levelsCompleted}.`;
     gameOverModal.classList.add('show');
   }
 
@@ -418,54 +350,49 @@
     if(isAnimating) return;
     if(bank[bankIndex]?.used) return;
     if(current.length>=5) return;
-    bank[bankIndex].used = true;
-    current.push({ch:letter, bankIndex});
-    renderUI();
-    autoSubmitIfFull();
+    bank[bankIndex].used=true;
+    current.push({ch:letter,bankIndex});
+    renderUI(); autoSubmitIfFull();
   }
   function handleBackspace(){
-    if(isAnimating) return;
-    if(!current.length) return;
-    const last=current.pop();
-    if(last && bank[last.bankIndex]) bank[last.bankIndex].used=false;
+    if(isAnimating||!current.length) return;
+    const last=current.pop(); if(last&&bank[last.bankIndex]) bank[last.bankIndex].used=false;
     renderUI();
   }
   function shuffleBank(){
-    const unused=[], pos=[];
+    const unused=[],pos=[];
     bank.forEach((b,i)=>{ if(!b.used){ unused.push(b.ch); pos.push(i);} });
-    shuffleArray(unused); pos.forEach((p,i)=> bank[p].ch = unused[i]);
+    shuffleArray(unused); pos.forEach((p,i)=> bank[p].ch=unused[i]);
     renderUI();
   }
-  function autoSubmitIfFull(){
-    if(current.length===5){
-      const word = current.map(x=>x.ch).join('');
-      submitGuess(word);
-    }
-  }
+  function autoSubmitIfFull(){ if(current.length===5){ submitGuess(current.map(x=>x.ch).join('')); } }
+
   async function submitGuess(word){
     if(isAnimating) return;
     const upper = word.toUpperCase();
-    if(ACCEPTED_SET.has(upper)){
-      isAnimating = true;
+
+    // Accept if present in guesses.txt OR answers.txt
+    const isValid = ACCEPTED_SET.has(upper) || ANSWER_SET.has(upper);
+
+    if(isValid){
+      isAnimating=true;
       document.querySelectorAll('.tile').forEach(t=>t.classList.add('correct'));
       await sleep(240); isAnimating=false;
       nextWord(true); renderUI();
     }else{
-      isAnimating = true;
+      isAnimating=true;
       answerRow.classList.add('shake'); await sleep(260); answerRow.classList.remove('shake');
       while(current.length){ const x=current.pop(); if(bank[x.bankIndex]) bank[x.bankIndex].used=false; }
-      isAnimating = false; renderUI();
+      isAnimating=false; renderUI();
     }
   }
 
   // ===== Render =====
   function renderUI(){
-    // Lives (rounded squares)
+    // Lives
     livesRow.innerHTML='';
     for(let i=0;i<STARTING_LIVES;i++){
-      const d=document.createElement('div');
-      d.className='life'+(i<lives?' on':'');
-      livesRow.appendChild(d);
+      const d=document.createElement('div'); d.className='life'+(i<lives?' on':''); livesRow.appendChild(d);
     }
     levelLabel.textContent='lvl '+numberToWords(Math.max(1,level));
 
@@ -474,8 +401,7 @@
     for(let i=0;i<5;i++){
       const t=document.createElement('div');
       t.className='tile'+(current[i]?' filled':'');
-      t.textContent=current[i]?.ch??'';
-      answerRow.appendChild(t);
+      t.textContent=current[i]?.ch??''; answerRow.appendChild(t);
     }
 
     // Bank
@@ -502,13 +428,11 @@
   setTheme(sessionStorage.getItem('jumbl-theme')
     || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'));
 
-  // Prevent accidental double-tap zoom on iOS
+  // Prevent double-tap zoom on iOS
   let lastTouch=0;
-  document.addEventListener('touchend',(e)=>{
-    const now=Date.now(); if(now-lastTouch<=300) e.preventDefault(); lastTouch=now;
-  },{passive:false});
+  document.addEventListener('touchend',(e)=>{ const now=Date.now(); if(now-lastTouch<=300) e.preventDefault(); lastTouch=now; },{passive:false});
 
-  // Optional keyboard for desktop testing
+  // Optional keyboard (desktop)
   document.addEventListener('keydown',(e)=>{
     if([introModal, gameOverModal, fetchModal].some(m=>m.classList.contains('show'))) return;
     const k=e.key.toUpperCase();
