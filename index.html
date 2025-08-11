@@ -333,7 +333,8 @@ If the timer hits zero, you lose a life (fresh letters, same level).<br/><br/>
       fetchStatus.textContent = `Loaded ${ANSWER_POOL.length} answers, ${ACCEPTED_SET.size} guesses.`;
       await sleep(200);
       fetchModal.classList.remove('show');
-      introModal.classList.add('show');
+primeBoard();                         // ← add this line
+introModal.classList.add('show');
     }catch(err){
       fetchStatus.textContent = `Failed: ${err.message}. Ensure both files are beside index.html.`;
       retryBtn.disabled=false;
@@ -341,7 +342,23 @@ If the timer hits zero, you lose a life (fresh letters, same level).<br/><br/>
   }
 
   function resetState(){ lives=STARTING_LIVES; level=1; current=[]; bank=[]; }
-  function startGame(){ resetState(); introModal.classList.remove('show'); gameOverModal.classList.remove('show'); nextWord(false); renderUI(); }
+  function primeBoard(){
+  // Pre-render a real board so the background matches the play area
+  lives = STARTING_LIVES;
+  level = 1;
+  current = [];
+  pickBankFromAnswers();              // pick letters now
+  stopWordTimer();                    // make sure no timer is running
+  cdFill.style.width = '100%';        // full bar while paused under the modal
+  renderUI();                         // draw tiles/bank/lives/controls
+}
+
+  function startGame(){
+  // Do NOT change the board here—only start the timer.
+  introModal.classList.remove('show');
+  gameOverModal.classList.remove('show');
+  startWordTimer();
+}
 
   function pickBankFromAnswers(){
     const word = ANSWER_POOL[randInt(ANSWER_POOL.length)];
@@ -514,28 +531,6 @@ attachPressFeedback(backBtn);
   setTheme(sessionStorage.getItem('jumbl-theme')
     || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'));
 
-  async function loadWordLists(){
-    fetchModal.classList.add('show'); fetchStatus.textContent='Fetching lists…'; retryBtn.disabled=true;
-    try{
-      const [ansRes, guessRes] = await Promise.all([
-        fetch('answers.txt',{cache:'no-store'}),
-        fetch('guesses.txt',{cache:'no-store'})
-      ]);
-      if(!ansRes.ok) throw new Error(`answers.txt HTTP ${ansRes.status}`);
-      if(!guessRes.ok) throw new Error(`guesses.txt HTTP ${guessRes.status}`);
-      const [ansText, guessText] = await Promise.all([ansRes.text(), guessRes.text()]);
-      const toWords = t => t.split(/\r?\n/).map(s=>s.trim().toUpperCase()).filter(w=>/^[A-Z]{5}$/.test(w));
-      ANSWER_POOL = toWords(ansText);
-      ANSWER_SET  = new Set(ANSWER_POOL);
-      ACCEPTED_SET= new Set(toWords(guessText));
-      if(!ANSWER_POOL.length) throw new Error('answers.txt is empty');
-      if(!ACCEPTED_SET.size)  throw new Error('guesses.txt is empty');
-      fetchModal.classList.remove('show');
-      introModal.classList.add('show');
-    }catch(err){
-      fetchStatus.textContent = `Failed: ${err.message}. Ensure both files are beside index.html.`; retryBtn.disabled=false;
-    }
-  }
   loadWordLists();
 })();
 </script>
