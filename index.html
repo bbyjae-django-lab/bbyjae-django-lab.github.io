@@ -621,33 +621,43 @@ attachPressFeedback(backBtn);
 
   themeBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); toggleTheme(); }, {passive:false});
 
-  // Keyboard controls (desktop): letters → pick from bank, Space → shuffle, Backspace → undo
+  // Keyboard controls (desktop): Space=shuffle (presses button), Backspace=undo (presses button), A–Z=use letter
 document.addEventListener('keydown', (e) => {
-  // ignore keys when a modal is open
+  // Ignore when a modal is open
   if (introModal.classList.contains('show') || gameOverModal.classList.contains('show')) return;
 
-  // BACKSPACE → remove last letter
+  // BACKSPACE → visually press the back button + undo
   if (e.key === 'Backspace') {
-    e.preventDefault();          // prevent browser back nav
+    e.preventDefault();                      // prevent browser back navigation
+    backBtn.classList.add('is-pressed');     // visual press
+    setTimeout(() => backBtn.classList.remove('is-pressed'), 120);
     handleBackspace();
     return;
   }
 
-  // SPACE → shuffle bank
+  // SPACE → visually press the shuffle button + shuffle
   if (e.key === ' ') {
-    e.preventDefault();          // prevent page scroll / button click
+    e.preventDefault();                      // prevent page scroll
+    shuffleBtn.classList.add('is-pressed');  // visual press
+    setTimeout(() => shuffleBtn.classList.remove('is-pressed'), 120);
     shuffleBank();
     return;
   }
 
-  // LETTER KEYS → take first matching *unused* bank letter
-  const k = e.key;
-  if (/^[a-zA-Z]$/.test(k)) {
-    const ch = k.toUpperCase();
+  // LETTER KEYS → act like clicking the first matching *unused* bank key
+  const ch = (e.key || '').toUpperCase();
+  if (ch >= 'A' && ch <= 'Z') {
+    // find first available matching letter in bank
     const idx = bank.findIndex(b => !b.used && b.ch === ch);
     if (idx !== -1) {
-      // reuse your existing tap flow so UI/animations stay consistent
-      handleLetterTap(ch, idx);
+      // briefly show the bank key as pressed for feedback
+      const btn = bankRow.querySelector(`button[data-index="${idx}"]`);
+      if (btn) {
+        btn.classList.add('is-pressed');
+        setTimeout(() => btn.classList.remove('is-pressed'), 100);
+      }
+      // use the same flow/timing as touch so animations look identical
+      setTimeout(() => { handleLetterTap(ch, idx); }, 80);
     }
   }
 });
