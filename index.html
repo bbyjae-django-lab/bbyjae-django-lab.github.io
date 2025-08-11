@@ -243,24 +243,22 @@ body{
     <div class="bank" id="bankRow" aria-label="Letter bank"></div>
 
     <div class="controls">
-  <!-- Shuffle (stroked arrows, rounded caps/joins) -->
+  <!-- Shuffle — Material Symbols path, centered -->
   <button id="shuffleBtn" aria-label="Shuffle letters">
     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
       <defs>
-        <linearGradient id="grad-shuffle" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient id="grad-shuf" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="var(--stop1)" stop-color="var(--grad1)"/>
           <stop offset="var(--stop2)" stop-color="var(--grad2)"/>
           <stop offset="var(--stop3)" stop-color="var(--grad3)"/>
         </linearGradient>
       </defs>
-      <!-- feather-style shuffle -->
-      <path d="M16 3h5v5" fill="none" stroke="url(#grad-shuffle)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M4 20l7-7-7-7" fill="none" stroke="url(#grad-shuffle)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M21 21l-7-7 7-7" fill="none" stroke="url(#grad-shuffle)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path fill="url(#grad-shuf)"
+        d="M16 3h5v5h-2V6.4l-3.3 3.3-1.4-1.4L17.6 5H16V3zM7 15h2.6l5.6-5.6 1.4 1.4L11 17H7v-2zm0-8h4l2 2H7V7zm9 9h-2v2h5v-5h-2v2z"/>
     </svg>
   </button>
 
-  <!-- Backspace (outline + X) -->
+  <!-- Backspace — Material Symbols path, centered -->
   <button id="backBtn" aria-label="Backspace">
     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
       <defs>
@@ -270,16 +268,11 @@ body{
           <stop offset="var(--stop3)" stop-color="var(--grad3)"/>
         </linearGradient>
       </defs>
-      <!-- key outline -->
-      <path d="M20 7H9a2 2 0 0 0-1.4.6L4.6 10.6a2 2 0 0 0 0 2.8L7.6 16.4A2 2 0 0 0 9 17h11a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z"
-            fill="none" stroke="url(#grad-back)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-      <!-- X -->
-      <path d="M12 9l6 6M18 9l-6 6"
-            fill="none" stroke="url(#grad-back)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path fill="url(#grad-back)"
+        d="M21 7H9c-.5 0-1 .2-1.4.6L4.6 10.6a2 2 0 0 0 0 2.8L7.6 16.4c.4.4.9.6 1.4.6h12a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zm-5.6 8L14 13.6 12.6 15 11 13.4 12.4 12 11 10.6 12.6 9 14 10.4 15.6 9 17 10.4 15.4 12 17 13.6 15.6 15z"/>
     </svg>
   </button>
 </div>
-
 
     <div class="spacer"></div>
   </div>
