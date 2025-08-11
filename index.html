@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <title>JUMBL</title>
 <style>
   :root{
@@ -245,13 +244,8 @@ body{
 
     <div class="controls">
         <!-- Clean, thick, two-curve shuffle with right arrowheads -->
-       <button id="shuffleBtn" class="control-btn">
-  <i class="fas fa-random"></i>
-</button>
-
-      <button id="backspaceBtn" class="control-btn">
-  <i class="fas fa-delete-left"></i>
-</button>
+       <button id="shuffleBtn" aria-label="Shuffle letters"><span class="btn-symbol grad-text" style="-webkit-text-stroke:1px rgba(0,0,0,0.15); font-size:clamp(52px,14vw,72px); font-weight:900; line-height:1;">⤮</span></button>
+      <button id="backBtn" aria-label="Backspace"><span class="btn-symbol grad-text">⌫</span></button>
     </div>
     <div class="spacer"></div>
   </div>
