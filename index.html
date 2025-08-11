@@ -626,6 +626,19 @@ attachPressFeedback(backBtn);
 
   loadWordLists();
 })();
+// Keyboard controls for desktop play
+document.addEventListener("keydown", (e) => {
+  if (document.querySelector("#introModal.show") || document.querySelector("#gameOverModal.show")) return;
+
+  if (e.key === "Backspace") {
+    e.preventDefault(); // stops browser from navigating back
+    handleBackspace();
+  } else if (e.key === " ") {
+    e.preventDefault(); // stops page scrolling
+    shuffleBank();
+  }
+});
+
 </script>
 </body>
 </html>
