@@ -193,6 +193,17 @@ body{
   100% { transform: rotate(0deg); }
 }
 
+/* Answer slot fill — pop & glow */
+.slot-pop {
+  animation: slotPop .22s cubic-bezier(0.3, 1.4, 0.4, 1) forwards;
+}
+@keyframes slotPop {
+  0%   { transform: scale(1); box-shadow: none; }
+  50%  { transform: scale(1.15); box-shadow: 0 0 8px rgba(255,150,200,0.55); }
+  100% { transform: scale(1); box-shadow: none; }
+}
+
+
   button{ min-height:44px; }
   /* Correct-guess celebration */
 @keyframes popWiggle {
@@ -446,13 +457,34 @@ introModal.classList.add('show');
   }
 
   function handleLetterTap(letter, bankIndex){
-    if(isAnimating) return;
-    if(bank[bankIndex]?.used) return;
-    if(current.length>=5) return;
-    bank[bankIndex].used=true;
-    current.push({ch:letter,bankIndex});
-    renderUI(); autoSubmitIfFull();
-  }
+  if(isAnimating) return;
+  if(bank[bankIndex]?.used) return;
+  if(current.length>=5) return;
+
+  // mark bank letter used and append to guess
+  bank[bankIndex].used = true;
+  current.push({ ch: letter, bankIndex });
+
+  // which slot index did we just fill?
+  const slotIndex = current.length - 1;
+
+  // re-render UI so the new letter shows
+  renderUI();
+
+  // pop & glow the slot we just filled
+  requestAnimationFrame(() => {
+    const slotEl = document.querySelector(`#answerRow .tile:nth-child(${slotIndex + 1})`);
+    if (slotEl) {
+      slotEl.classList.remove('slot-pop');
+      void slotEl.offsetWidth; // restart animation
+      slotEl.classList.add('slot-pop');
+    }
+  });
+
+  // continue as before
+  autoSubmitIfFull();
+}
+
   function handleBackspace(){
     if(isAnimating||!current.length) return;
     const last=current.pop(); if(last&&bank[last.bankIndex]) bank[last.bankIndex].used=false;
