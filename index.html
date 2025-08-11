@@ -621,24 +621,42 @@ attachPressFeedback(backBtn);
 
   themeBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); toggleTheme(); }, {passive:false});
 
+  // Keyboard controls (desktop): letters → pick from bank, Space → shuffle, Backspace → undo
+document.addEventListener('keydown', (e) => {
+  // ignore keys when a modal is open
+  if (introModal.classList.contains('show') || gameOverModal.classList.contains('show')) return;
+
+  // BACKSPACE → remove last letter
+  if (e.key === 'Backspace') {
+    e.preventDefault();          // prevent browser back nav
+    handleBackspace();
+    return;
+  }
+
+  // SPACE → shuffle bank
+  if (e.key === ' ') {
+    e.preventDefault();          // prevent page scroll / button click
+    shuffleBank();
+    return;
+  }
+
+  // LETTER KEYS → take first matching *unused* bank letter
+  const k = e.key;
+  if (/^[a-zA-Z]$/.test(k)) {
+    const ch = k.toUpperCase();
+    const idx = bank.findIndex(b => !b.used && b.ch === ch);
+    if (idx !== -1) {
+      // reuse your existing tap flow so UI/animations stay consistent
+      handleLetterTap(ch, idx);
+    }
+  }
+});
+
   setTheme(sessionStorage.getItem('jumbl-theme')
     || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'));
 
   loadWordLists();
 })();
-// Keyboard controls for desktop play
-document.addEventListener("keydown", (e) => {
-  if (document.querySelector("#introModal.show") || document.querySelector("#gameOverModal.show")) return;
-
-  if (e.key === "Backspace") {
-    e.preventDefault(); // stops browser from navigating back
-    handleBackspace();
-  } else if (e.key === " ") {
-    e.preventDefault(); // stops page scrolling
-    shuffleBank();
-  }
-});
-
 </script>
 </body>
 </html>
