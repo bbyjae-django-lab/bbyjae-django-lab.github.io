@@ -183,6 +183,16 @@ body{
   .gbtn{ border:none; border-radius:14px; color:white; padding:12px; font-weight:900; box-shadow:var(--shadow); }
 
   @keyframes shake{ 0%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0);} }
+  /* Subtle jiggle used when shuffling the bank */
+.jiggle { animation: jiggle .25s ease both; }
+@keyframes jiggle {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(-1.5deg); }
+  50%  { transform: rotate(1.5deg); }
+  75%  { transform: rotate(-0.8deg); }
+  100% { transform: rotate(0deg); }
+}
+
   button{ min-height:44px; }
   /* Correct-guess celebration */
 @keyframes popWiggle {
@@ -449,11 +459,20 @@ introModal.classList.add('show');
     renderUI();
   }
   function shuffleBank(){
-    const unused=[],pos=[];
-    bank.forEach((b,i)=>{ if(!b.used){ unused.push(b.ch); pos.push(i);} });
-    shuffleArray(unused); pos.forEach((p,i)=> bank[p].ch=unused[i]);
-    renderUI();
-  }
+  const unused=[],pos=[];
+  bank.forEach((b,i)=>{ if(!b.used){ unused.push(b.ch); pos.push(i);} });
+  shuffleArray(unused); pos.forEach((p,i)=> bank[p].ch=unused[i]);
+
+  // Re-render the letters
+  renderUI();
+
+  // Subtle jiggle on the bank container to signal shuffle
+  bankRow.classList.remove('jiggle');
+  void bankRow.offsetWidth;           // reflow to restart animation
+  bankRow.classList.add('jiggle');
+  setTimeout(()=> bankRow.classList.remove('jiggle'), 300);
+}
+
   function autoSubmitIfFull(){ if(current.length===5){ submitGuess(current.map(x=>x.ch).join('')); } }
 
   async function submitGuess(word){
