@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <title>JUMBL</title>
 <style>
   :root{
@@ -243,37 +244,15 @@ body{
     <div class="bank" id="bankRow" aria-label="Letter bank"></div>
 
     <div class="controls">
-  <!-- Shuffle button -->
-  <button id="shuffleBtn" aria-label="Shuffle letters">
-    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-      <defs>
-        <linearGradient id="grad-shuf" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="var(--stop1)" stop-color="var(--grad1)"/>
-          <stop offset="var(--stop2)" stop-color="var(--grad2)"/>
-          <stop offset="var(--stop3)" stop-color="var(--grad3)"/>
-        </linearGradient>
-      </defs>
-      <path fill="url(#grad-shuf)"
-        d="M17 3h4v4h-2V5.41l-4.29 4.3-1.42-1.42L17.59 4H17V3zM6 8h3.17l6.41 6.41-1.41 1.41L8.17 9H6V8zm0 8h3.17l2.41-2.41-1.41-1.41L6 14.17V16z"/>
-    </svg>
-  </button>
+        <!-- Clean, thick, two-curve shuffle with right arrowheads -->
+       <button id="shuffleBtn" class="control-btn">
+  <i class="fas fa-random"></i>
+</button>
 
-  <!-- Backspace button -->
-  <button id="backBtn" aria-label="Backspace">
-    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-      <defs>
-        <linearGradient id="grad-back" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="var(--stop1)" stop-color="var(--grad1)"/>
-          <stop offset="var(--stop2)" stop-color="var(--grad2)"/>
-          <stop offset="var(--stop3)" stop-color="var(--grad3)"/>
-        </linearGradient>
-      </defs>
-      <path fill="url(#grad-back)"
-        d="M22 4H8c-.53 0-1.04.21-1.41.59L1.59 9.59c-.78.78-.78 2.05 0 2.83l5 5c.37.37.88.58 1.41.58h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5.59 11L14 12.41 11.59 14 10 12.41 12.41 10 10 7.59 11.59 6 14 8.41 16.41 6 18 7.59 15.59 10 18 12.41 16.41 14z"/>
-    </svg>
-  </button>
-</div>
-
+      <button id="backspaceBtn" class="control-btn">
+  <i class="fas fa-delete-left"></i>
+</button>
+    </div>
     <div class="spacer"></div>
   </div>
 
