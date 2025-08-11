@@ -34,23 +34,39 @@ html{ scrollbar-gutter: stable both-edges; }  /* prevents left/right jump when s
 body{
   margin:0;
   width:100%;
-  min-height:100vh;
-  overflow-x:hidden;
-  display:flex;                 /* center the .app */
-  justify-content:center;       /* horizontal centering */
+  height:100dvh;           /* use dynamic viewport height on iOS */
+  min-height:100dvh;
+  overflow:hidden;         /* prevent page scroll */
+  overscroll-behavior:none;
+  display:flex;            /* center the .app */
+  justify-content:center;
   background:var(--bg);
   color:var(--fg);
   font-family: system-ui, -apple-system, "SF Pro Text", Segoe UI, Roboto, Arial, sans-serif;
 }
 
 
+
   .app{
-    width:min(var(--vw,100vw),600px);
-      margin:0;                     /* body flex handles centering */
-    padding:calc(env(safe-area-inset-top,0px) + 16px) 12px calc(env(safe-area-inset-bottom,0px) + 18px);
-    display:grid; grid-template-rows:auto auto auto auto auto auto 1fr; gap:12px;
+  width:min(var(--vw,100vw),600px);
+  margin:0;  /* body flex handles centering */
+  padding:calc(env(safe-area-inset-top,0px) + 16px) 12px calc(env(safe-area-inset-bottom,0px) + 18px);
+  display:grid;
+  grid-template-rows:auto auto auto auto auto auto 1fr;
+  gap:12px;
+  height:100dvh;        /* fill the visible part of the screen */
+  min-height:100dvh;
+  overflow:hidden;      /* keep inner layout from forcing page scroll */
+}
+
+/* Fallback for older Safari that doesn't support 100dvh */
+@supports not (height:100dvh){
+  .app{
+    height:calc(var(--vh, 1vh) * 100);
+    min-height:calc(var(--vh, 1vh) * 100);
   }
-  @supports(min-height:100dvh){ .app{ min-height:100dvh; } }
+}
+
 
   .grad-text{
     background:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3));
@@ -301,6 +317,22 @@ If the timer hits zero, you lose a life (fresh letters, same level).<br/><br/>
   window.addEventListener('orientationchange', setVwVar);
   window.addEventListener('resize', setVwVar);
   window.addEventListener('pageshow', setVwVar);
+
+  // iOS 15 and older: keep a correct --vh for our CSS fallback
+function setVhVar(){
+  const vv = window.visualViewport;
+  const vh = (vv ? vv.height : window.innerHeight) * 0.01;
+  document.documentElement.style.setProperty('--vh', vh + 'px');
+}
+setVhVar();
+if (window.visualViewport){
+  visualViewport.addEventListener('resize', setVhVar);
+  visualViewport.addEventListener('scroll', setVhVar);
+}
+window.addEventListener('orientationchange', setVhVar);
+window.addEventListener('resize', setVhVar);
+window.addEventListener('pageshow', setVhVar);
+
 
   function setSun(){
     themeIcon.innerHTML = `
