@@ -135,20 +135,12 @@
     }
     .slot.filled { background: var(--tile-bright); }
 
-    /* Letter bank */
-    .bank {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--gap);
-    }
-    .letter {
-      width: 100%; aspect-ratio: 1 / 1; display:grid; place-items:center;
-      font-weight: 800; font-size: clamp(22px, 7vw, 28px);
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      color: #0b0d10; border-radius: calc(var(--radius) * 1.25);
-      box-shadow: var(--shadow);
-      position: relative; isolation: isolate;
-    }
-    .letter[aria-disabled="true"] { opacity: 0.35; filter: grayscale(0.4); pointer-events: none; }
-    .bank.jiggle { animation: jiggle var(--anim-slow) ease; }
+    <!-- Letter Bank -->
+<div id="bank"
+     class="bank"
+     aria-label="Letter bank"
+     style="display:grid;grid-template-columns:repeat(5,minmax(44px,1fr));gap:10px;">
+</div>
 
     /* Controls */
     .controls {
