@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <title>JUMBL</title>
@@ -10,163 +10,94 @@
     --bg:#f7f7f9; --fg:#1f2328; --muted:#6a6f76;
     --tile:#ffffff; --tile-empty:#e9ebef;
     --grad1:#FFB36C; --grad2:#FF8FC6; --grad3:#FFA6E6;
-    --stop1:0%; --stop2:45%; --stop3:100%;
-    --danger:#ff5c7a;
+    --danger:#ff5c7a; --sheet:#ffffff;
     --shadow:0 6px 20px rgba(0,0,0,.08);
     --radius:16px;
-    --sheet:#ffffff;
   }
   .dark{
     --bg:#0f1115; --fg:#e6e7eb; --muted:#9aa1aa;
     --tile:#171a20; --tile-empty:#1f2430;
     --grad1:#9AA9FF; --grad2:#71D3CF; --grad3:#46E39C;
-    --stop1:0%; --stop2:45%; --stop3:100%;
-    --danger:#ff6b88;
+    --danger:#ff6b88; --sheet:#12161e;
     --shadow:0 8px 24px rgba(0,0,0,.35);
-    --sheet:#12161e;
   }
 
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html{ height:100%; width:100%; -webkit-text-size-adjust:100%; overflow-x:hidden; }
-  /* Keep the app centered on any desktop width/split view */
-html{ scrollbar-gutter: stable both-edges; }  /* prevents left/right jump when scrollbar appears/disappears */
-
-body{
-  margin:0;
-  width:100%;
-  height:100dvh;           /* use dynamic viewport height on iOS */
-  min-height:100dvh;
-  overflow:hidden;         /* prevent page scroll */
-  overscroll-behavior:none;
-  display:flex;            /* center the .app */
-  justify-content:center;
-  background:var(--bg);
-  color:var(--fg);
-  font-family: system-ui, -apple-system, "SF Pro Text", Segoe UI, Roboto, Arial, sans-serif;
-}
-
-
-
-  .app{
-  width:min(var(--vw,100vw),600px);
-  margin:0;  /* body flex handles centering */
-  padding:calc(env(safe-area-inset-top,0px) + 16px) 12px calc(env(safe-area-inset-bottom,0px) + 18px);
-  display:grid;
-  grid-template-rows:auto auto auto auto auto auto 1fr;
-  gap:12px;
-  height:100dvh;        /* fill the visible part of the screen */
-  min-height:100dvh;
-  overflow:hidden;      /* keep inner layout from forcing page scroll */
-}
-
-/* Fallback for older Safari that doesn't support 100dvh */
-@supports not (height:100dvh){
-  .app{
-    height:calc(var(--vh, 1vh) * 100);
-    min-height:calc(var(--vh, 1vh) * 100);
+  html{ height:100%; width:100%; -webkit-text-size-adjust:100%; overflow-x:hidden; scrollbar-gutter:stable both-edges; }
+  body{
+    margin:0; width:100%; height:100dvh; min-height:100dvh; overflow:hidden; overscroll-behavior:none;
+    display:flex; justify-content:center; background:var(--bg); color:var(--fg);
+    font-family: system-ui,-apple-system,"SF Pro Text",Segoe UI,Roboto,Arial,sans-serif;
   }
-}
-
+  .app{
+    width:min(var(--vw,100vw),600px);
+    padding:calc(env(safe-area-inset-top,0px) + 16px) 12px calc(env(safe-area-inset-bottom,0px) + 18px);
+    display:grid; grid-template-rows:auto auto auto auto auto auto 1fr; gap:12px;
+    height:100dvh; min-height:100dvh; overflow:hidden;
+  }
+  @supports not (height:100dvh){
+    .app{ height:calc(var(--vh,1vh)*100); min-height:calc(var(--vh,1vh)*100); }
+  }
 
   .grad-text{
-    background:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3));
+    background:linear-gradient(90deg,var(--grad1) 0%,var(--grad2) 45%,var(--grad3) 100%);
     -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
   }
-  .grad-bg{ background:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3)); }
+  .grad-bg{ background:linear-gradient(90deg,var(--grad1) 0%,var(--grad2) 45%,var(--grad3) 100%); }
 
   header{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px; padding-block:4px; }
   .title{ grid-column:2; text-align:center; font-weight:900; letter-spacing:1.4px; font-size:clamp(44px,12vw,64px); line-height:1.05; margin-top:10px; margin-bottom:16px; }
-  .theme-toggle{ justify-self:end; border:none; padding:6px; border-radius:999px; box-shadow:var(--shadow); touch-action:manipulation; }
-  .theme-toggle svg{ width:28px; height:28px; display:block; color:#fff; }
+  .theme-toggle{ justify-self:end; border:none; padding:6px; border-radius:999px; box-shadow:var(--shadow); }
+  .theme-toggle svg{ width:28px; height:28px; color:#fff; display:block; }
 
-  /* Lives: continuous gradient across all 3, dim when lost */
   .lives{ display:flex; justify-content:center; gap:8px; }
   .life{
-    --cells:3; --i:0;
     width:18px; height:18px; border-radius:6px; box-shadow:var(--shadow);
-    background-image:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3));
-    background-size:calc(var(--cells)*100%) 100%;
-    /* CORRECT slice position: 0% → 100% across the strip */
-    background-position:calc((var(--i) / (var(--cells) - 1)) * 100%) 0;
-    background-repeat:no-repeat;
+    background:linear-gradient(90deg,var(--grad1) 0%,var(--grad2) 45%,var(--grad3) 100%);
     opacity:.25;
   }
   .life.on{ opacity:1; }
-  .life:not(.on){ display:none; }
 
-
-  .levelbar{ display:flex; align-items:center; justify-content:flex-start; font-size:14px; color:var(--muted); padding:0 2px; }
+  .levelbar{ display:flex; justify-content:flex-start; align-items:center; font-size:14px; color:var(--muted); padding:0 2px; }
 
   .countdown{ background:var(--tile); border-radius:var(--radius); box-shadow:var(--shadow); padding:8px 10px; }
   .cd-bar{ position:relative; height:16px; border-radius:12px; overflow:hidden; background:var(--tile-empty); }
   .cd-fill{ position:absolute; inset:0 auto 0 0; width:0%; transition:width 100ms linear; will-change:width; }
   .cd-fill.grad-bg{}
 
-  /* Answer tiles: continuous gradient across 5 tiles */
   .answer-row{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:6px; }
   .tile{
-    --cells:5; --i:0;
     aspect-ratio:1/1; display:grid; place-items:center; border-radius:14px; box-shadow:var(--shadow);
     font-weight:900; font-size:clamp(28px,9vw,36px); letter-spacing:1px; color:#fff;
-    background-image:linear-gradient(90deg,var(--grad1) var(--stop1),var(--grad2) var(--stop2),var(--grad3) var(--stop3));
-    background-size:calc(var(--cells)*100%) 100%;
-    /* CORRECT slice position */
-    background-position:calc((var(--i) / (var(--cells) - 1)) * 100%) 0;
-    background-repeat:no-repeat;
-    opacity:.65; transition:opacity .2s ease;
-    user-select:none; -webkit-user-select:none;
+    background:linear-gradient(90deg,var(--grad1) 0%,var(--grad2) 45%,var(--grad3) 100%);
+    opacity:.65; transition:opacity .2s ease; user-select:none; -webkit-user-select:none;
   }
   .tile.filled{ opacity:1; }
-  .answer-row.shake{ animation:shake 260ms ease; }
+  .answer-row.shake{ animation:shake .26s ease; }
 
   .bank{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:2px; }
   .bank button{
     aspect-ratio:1/1; border:none; border-radius:14px; background:var(--tile);
     box-shadow:var(--shadow); display:flex; align-items:center; justify-content:center;
     touch-action:manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
-    transition: transform 90ms ease, box-shadow 90ms ease, filter 90ms ease;
+    transition:transform 90ms ease, box-shadow 90ms ease, filter 90ms ease; min-height:56px;
   }
-  .bank button:disabled{
-  opacity:.35;
-  transform:none;
-  filter:none;
-}
-
-.bank button.is-pressed{
-  transform: scale(0.96);
-  box-shadow: 0 4px 14px rgba(0,0,0,.12);
-  filter: brightness(0.98) saturate(1.05);
-}
-.dark .bank button.is-pressed{
-  box-shadow: 0 6px 18px rgba(0,0,0,.55);
-}
-
-
+  .bank button:disabled{ opacity:.35; transform:none; filter:none; }
+  .bank button.is-pressed{ transform:scale(.96); box-shadow:0 4px 14px rgba(0,0,0,.12); filter:brightness(.98) saturate(1.05); }
+  .dark .bank button.is-pressed{ box-shadow:0 6px 18px rgba(0,0,0,.55); }
   .bank .letter{ font-size:clamp(24px,8vw,34px); font-weight:900; letter-spacing:1px; }
 
   .controls{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:2px; }
   .controls button{
-  border:none; border-radius:14px; background:var(--tile); color:var(--fg);
-  box-shadow:var(--shadow); min-height:56px; display:flex; align-items:center; justify-content:center; padding:0;
-  touch-action:manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
-}
-  /* Press feedback for Shuffle + Backspace */
-#shuffleBtn, #backBtn{
-  transition: transform 90ms ease, box-shadow 90ms ease, filter 90ms ease;
-}
-#shuffleBtn:active, #backBtn:active,
-#shuffleBtn.is-pressed, #backBtn.is-pressed{
-  transform: scale(0.96);
-  box-shadow: 0 4px 14px rgba(0,0,0,.12);
-  filter: brightness(0.98) saturate(1.05);
-}
-.dark #shuffleBtn:active, .dark #backBtn:active,
-.dark #shuffleBtn.is-pressed, .dark #backBtn.is-pressed{
-  box-shadow: 0 6px 18px rgba(0,0,0,.55);
-}
-  .btn-symbol{ line-height:1; display:block; font-weight:900; font-size:clamp(40px,12vw,52px); }
-.icon{ width:clamp(40px,12vw,52px); height:clamp(40px,12vw,52px); display:block; }
+    border:none; border-radius:14px; background:var(--tile); color:var(--fg);
+    box-shadow:var(--shadow); min-height:56px; display:flex; align-items:center; justify-content:center; padding:0;
+    touch-action:manipulation; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
+    transition:transform 90ms ease, box-shadow 90ms ease, filter 90ms ease;
+  }
+  .controls button.is-pressed{ transform:scale(.96); box-shadow:0 4px 14px rgba(0,0,0,.12); filter:brightness(.98) saturate(1.05); }
+  .dark .controls button.is-pressed{ box-shadow:0 6px 18px rgba(0,0,0,.55); }
 
+  .btn-symbol{ display:block; font-weight:900; font-size:clamp(40px,12vw,52px); line-height:1; }
   .spacer{ min-height:1px; }
 
   .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; padding:24px; z-index:1000; }
@@ -180,50 +111,48 @@ body{
     display:grid; grid-template-rows:auto 1fr auto; gap:12px; text-align:center;
   }
   .sheet h2{ margin:0; font-size:22px; }
-  .gbtn{ border:none; border-radius:14px; color:white; padding:12px; font-weight:900; box-shadow:var(--shadow); }
+  .gbtn{ border:none; border-radius:14px; color:#fff; padding:12px; font-weight:900; box-shadow:var(--shadow); }
 
-  @keyframes shake{ 0%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0);} }
-  /* Subtle jiggle used when shuffling the bank */
-.jiggle { animation: jiggle .25s ease both; }
-@keyframes jiggle {
-  0%   { transform: rotate(0deg); }
-  25%  { transform: rotate(-1.5deg); }
-  50%  { transform: rotate(1.5deg); }
-  75%  { transform: rotate(-0.8deg); }
-  100% { transform: rotate(0deg); }
-}
+  @keyframes shake{
+    0%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}
+    60%{transform:translateX(-6px)}80%{transform:translateX(6px)}100%{transform:translateX(0)}
+  }
+  @keyframes jiggle{
+    0%{transform:rotate(0)}25%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}75%{transform:rotate(-.8deg)}100%{transform:rotate(0)}
+  }
+  .jiggle{ animation:jiggle .25s ease both; }
 
-/* Answer slot fill — pop & glow */
-.slot-pop {
-  animation: slotPop .22s cubic-bezier(0.3, 1.4, 0.4, 1) forwards;
-}
-@keyframes slotPop {
-  0%   { transform: scale(1); box-shadow: none; }
-  50%  { transform: scale(1.08); box-shadow: 0 0 8px rgba(255,150,200,0.55); }
-  100% { transform: scale(1); box-shadow: none; }
-}
+  /* Slot pop */
+  .slot-pop{ animation:slotPop .22s cubic-bezier(.3,1.4,.4,1) forwards; }
+  @keyframes slotPop{
+    0%{ transform:scale(1); box-shadow:none }
+    50%{ transform:scale(1.08); box-shadow:0 0 8px rgba(255,150,200,.55) }
+    100%{ transform:scale(1); box-shadow:none }
+  }
+  /* Celebrate */
+  @keyframes popWiggle{
+    0%{transform:scale(1) rotate(0)}
+    20%{transform:scale(1.12) rotate(.6deg)}
+    40%{transform:scale(1.08) rotate(-.6deg)}
+    60%{transform:scale(1.10) rotate(.4deg)}
+    80%{transform:scale(1.04) rotate(-.3deg)}
+    100%{transform:scale(1) rotate(0)}
+  }
+  .answer-row.celebrate .tile{
+    animation:popWiggle 520ms cubic-bezier(.2,.8,.2,1) both;
+    animation-delay:calc(var(--i,0) * 45ms);
+    will-change:transform;
+  }
 
-
-  button{ min-height:44px; }
-  /* Correct-guess celebration */
-@keyframes popWiggle {
-  0%   { transform: scale(1) rotate(0deg); }
-  20%  { transform: scale(1.12) rotate(0.6deg); }
-  40%  { transform: scale(1.08) rotate(-0.6deg); }
-  60%  { transform: scale(1.10) rotate(0.4deg); }
-  80%  { transform: scale(1.04) rotate(-0.3deg); }
-  100% { transform: scale(1) rotate(0deg); }
-}
-.answer-row.celebrate .tile {
-  animation: popWiggle 520ms cubic-bezier(.2,.8,.2,1) both;
-  /* use the existing per-tile --i to stagger */
-  animation-delay: calc(var(--i) * 45ms);
-  will-change: transform;
-}
+  @media (prefers-reduced-motion: reduce){
+    .answer-row.shake, .jiggle, .slot-pop, .answer-row.celebrate .tile{
+      animation-duration:.01ms; animation-iteration-count:1;
+    }
+  }
 </style>
 </head>
 <body>
-  <div id="root" class="app">
+  <div id="root" class="app" aria-live="polite">
     <header>
       <div></div>
       <div class="title grad-text">JUMBL</div>
@@ -235,7 +164,7 @@ body{
     <div class="lives" id="livesRow" aria-label="Lives"></div>
     <div class="levelbar"><div class="level" id="levelLabel">Level 1</div></div>
 
-    <div class="countdown" aria-live="polite">
+    <div class="countdown" aria-label="Time remaining">
       <div class="cd-bar"><div id="cdFill" class="cd-fill grad-bg"></div></div>
     </div>
 
@@ -243,44 +172,43 @@ body{
     <div class="bank" id="bankRow" aria-label="Letter bank"></div>
 
     <div class="controls">
-        <!-- Clean, thick, two-curve shuffle with right arrowheads -->
-       <button id="shuffleBtn" aria-label="Shuffle letters"><span class="btn-symbol grad-text" style="-webkit-text-stroke:1px rgba(0,0,0,0.15); font-size:clamp(52px,14vw,72px); font-weight:900; line-height:1;">⤮</span></button>
+      <button id="shuffleBtn" aria-label="Shuffle letters"><span class="btn-symbol grad-text" style="-webkit-text-stroke:1px rgba(0,0,0,.15)">⤮</span></button>
       <button id="backBtn" aria-label="Backspace"><span class="btn-symbol grad-text">⌫</span></button>
     </div>
     <div class="spacer"></div>
   </div>
 
-  <!-- Intro Modal -->
-  <div id="introModal" class="modal">
+  <!-- Intro -->
+  <div id="introModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
     <div class="overlay"></div>
     <div class="sheet">
-      <h2 class="grad-text"><strong>RULES</strong></h2>
+      <h2 id="rulesTitle" class="grad-text"><strong>RULES</strong></h2>
       <div class="content">
         Use the jumbled letters to make a real 5-letter word.<br/>
-Beat the clock to level up and refill the timer.<br/>
-If the timer hits zero, you lose a life (fresh letters, same level).<br/><br/>
-<strong>25 seconds per word • 3 lives</strong><br/><br/>
-<strong>Tip:</strong> ⤮ Shuffle for inspiration • ⌫ Undo a letter
+        Beat the clock to level up and refill the timer.<br/>
+        If the timer hits zero, you lose a life (fresh letters, same level).<br/><br/>
+        <strong>25 seconds per word • 3 lives</strong><br/><br/>
+        <strong>Tip:</strong> ⤮ Shuffle for inspiration • ⌫ Undo a letter
       </div>
       <div class="actions"><button id="playBtn" class="gbtn grad-bg">Play</button></div>
     </div>
   </div>
 
-  <!-- Game Over Modal -->
-  <div id="gameOverModal" class="modal">
+  <!-- Game Over -->
+  <div id="gameOverModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="overTitle">
     <div class="overlay"></div>
     <div class="sheet">
-      <h2 class="grad-text">Game Over</h2>
+      <h2 id="overTitle" class="grad-text">Game Over</h2>
       <div class="content"><p id="summaryText"></p></div>
       <div class="actions"><button id="againBtn" class="gbtn grad-bg">try again ➜</button></div>
     </div>
   </div>
 
-  <!-- Loading / Retry Modal -->
-  <div id="fetchModal" class="modal show">
+  <!-- Loading / Retry -->
+  <div id="fetchModal" class="modal show" role="dialog" aria-modal="true" aria-labelledby="loadTitle">
     <div class="overlay"></div>
     <div class="sheet">
-      <h2 class="grad-text">Loading word lists…</h2>
+      <h2 id="loadTitle" class="grad-text">Loading word lists…</h2>
       <div class="content" id="fetchStatus">Fetching <code>answers.txt</code> and <code>guesses.txt</code></div>
       <div class="actions"><button id="retryBtn" class="gbtn grad-bg">Retry</button></div>
     </div>
@@ -288,20 +216,23 @@ If the timer hits zero, you lose a life (fresh letters, same level).<br/><br/>
 
 <script>
 (()=> {
+  // ===== Config =====
   const COUNTDOWN_SECONDS = 25;
   const STARTING_LIVES   = 3;
 
+  // ===== State =====
   let ACCEPTED_SET = new Set();
   let ANSWER_POOL  = [];
   let ANSWER_SET   = new Set();
-  let bank = [];
-  let current = [];
+  let bank = [];              // [{ch, used}]
+  let current = [];           // [{ch, bankIndex}]
   let lives = STARTING_LIVES;
   let level = 1;
   let wordDeadlineAt = 0;
-  let wordTimerInterval = null;
+  let timerHandle = null;
   let isAnimating = false;
 
+  // ===== DOM =====
   const livesRow   = document.getElementById('livesRow');
   const levelLabel = document.getElementById('levelLabel');
   const cdFill     = document.getElementById('cdFill');
@@ -309,51 +240,45 @@ If the timer hits zero, you lose a life (fresh letters, same level).<br/><br/>
   const bankRow    = document.getElementById('bankRow');
   const shuffleBtn = document.getElementById('shuffleBtn');
   const backBtn    = document.getElementById('backBtn');
-  const introModal   = document.getElementById('introModal');
-  const playBtn      = document.getElementById('playBtn');
-  const gameOverModal= document.getElementById('gameOverModal');
-  const againBtn     = document.getElementById('againBtn');
-  const fetchModal   = document.getElementById('fetchModal');
-  const fetchStatus  = document.getElementById('fetchStatus');
-  const retryBtn     = document.getElementById('retryBtn');
-  const themeBtn     = document.getElementById('themeBtn');
-  const themeIcon    = document.getElementById('themeIcon');
+  const introModal = document.getElementById('introModal');
+  const playBtn    = document.getElementById('playBtn');
+  const gameOverModal = document.getElementById('gameOverModal');
+  const againBtn   = document.getElementById('againBtn');
+  const fetchModal = document.getElementById('fetchModal');
+  const fetchStatus= document.getElementById('fetchStatus');
+  const retryBtn   = document.getElementById('retryBtn');
+  const themeBtn   = document.getElementById('themeBtn');
+  const themeIcon  = document.getElementById('themeIcon');
 
-  const sleep = ms => new Promise(r=>setTimeout(r,ms));
+  // ===== Utils =====
+  const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
   const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-  const randInt = n => Math.floor(Math.random()*n);
-  function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=randInt(i+1); [a[i],a[j]]=[a[j],a[i]]; } }
+  const randInt = (n)=>Math.floor(Math.random()*n);
+  function fyShuffle(a){ for(let i=a.length-1;i>0;i--){ const j=randInt(i+1); [a[i],a[j]]=[a[j],a[i]]; } }
 
+  // Dynamic viewport for iOS
   function setVwVar(){
     const vv = window.visualViewport;
     const vw = vv ? vv.width : Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     document.documentElement.style.setProperty('--vw', vw + 'px');
   }
-  setVwVar();
+  function setVhVar(){
+    const vv = window.visualViewport;
+    const vh = (vv ? vv.height : window.innerHeight) * 0.01;
+    document.documentElement.style.setProperty('--vh', vh + 'px');
+  }
+  setVwVar(); setVhVar();
   if (window.visualViewport){
     visualViewport.addEventListener('resize', setVwVar);
     visualViewport.addEventListener('scroll', setVwVar);
+    visualViewport.addEventListener('resize', setVhVar);
+    visualViewport.addEventListener('scroll', setVhVar);
   }
-  window.addEventListener('orientationchange', setVwVar);
-  window.addEventListener('resize', setVwVar);
-  window.addEventListener('pageshow', setVwVar);
+  window.addEventListener('orientationchange', ()=>{ setVwVar(); setVhVar(); });
+  window.addEventListener('resize', ()=>{ setVwVar(); setVhVar(); });
+  window.addEventListener('pageshow', ()=>{ setVwVar(); setVhVar(); });
 
-  // iOS 15 and older: keep a correct --vh for our CSS fallback
-function setVhVar(){
-  const vv = window.visualViewport;
-  const vh = (vv ? vv.height : window.innerHeight) * 0.01;
-  document.documentElement.style.setProperty('--vh', vh + 'px');
-}
-setVhVar();
-if (window.visualViewport){
-  visualViewport.addEventListener('resize', setVhVar);
-  visualViewport.addEventListener('scroll', setVhVar);
-}
-window.addEventListener('orientationchange', setVhVar);
-window.addEventListener('resize', setVhVar);
-window.addEventListener('pageshow', setVhVar);
-
-
+  // Theme
   function setSun(){
     themeIcon.innerHTML = `
       <circle cx="12" cy="12" r="4"/>
@@ -372,10 +297,11 @@ window.addEventListener('pageshow', setVhVar);
     const r=document.documentElement;
     if(t==='dark'){ r.classList.add('dark'); setMoon(); }
     else { r.classList.remove('dark'); setSun(); }
-    sessionStorage.setItem('jumbl-theme',t);
+    sessionStorage.setItem('jumbl-theme', t);
   }
   function toggleTheme(){ setTheme(document.documentElement.classList.contains('dark')?'light':'dark'); }
 
+  // ===== Loading word lists =====
   async function loadWordLists(){
     fetchModal.classList.add('show'); fetchStatus.textContent='Fetching lists…'; retryBtn.disabled=true;
     try{
@@ -392,163 +318,37 @@ window.addEventListener('pageshow', setVhVar);
       ACCEPTED_SET= new Set(toWords(guessText));
       if(!ANSWER_POOL.length) throw new Error('answers.txt is empty');
       if(!ACCEPTED_SET.size)  throw new Error('guesses.txt is empty');
+
       fetchStatus.textContent = `Loaded ${ANSWER_POOL.length} answers, ${ACCEPTED_SET.size} guesses.`;
       await sleep(200);
       fetchModal.classList.remove('show');
-primeBoard();                         // ← add this line
-introModal.classList.add('show');
+
+      primeBoard();
+      introModal.classList.add('show');
     }catch(err){
-      fetchStatus.textContent = `Failed: ${err.message}. Ensure both files are beside index.html.`;
+      fetchStatus.textContent = `Failed: ${err.message}. Ensure both files are beside index.html (served over HTTP).`;
       retryBtn.disabled=false;
     }
   }
 
+  // ===== Game flow =====
   function resetState(){ lives=STARTING_LIVES; level=1; current=[]; bank=[]; }
-  function primeBoard(){
-  // Pre-render a real board so the background matches the play area
-  lives = STARTING_LIVES;
-  level = 1;
-  current = [];
-  pickBankFromAnswers();              // pick letters now
-  stopWordTimer();                    // make sure no timer is running
-  cdFill.style.width = '100%';        // full bar while paused under the modal
-  renderUI();                         // draw tiles/bank/lives/controls
-}
-
-  function startGame(){
-  // Do NOT change the board here—only start the timer.
-  introModal.classList.remove('show');
-  gameOverModal.classList.remove('show');
-  startWordTimer();
-}
-
   function pickBankFromAnswers(){
     const word = ANSWER_POOL[randInt(ANSWER_POOL.length)];
-    const letters = word.split(''); shuffleArray(letters);
+    const letters = word.split(''); fyShuffle(letters);
     bank = letters.map(ch=>({ch,used:false}));
   }
-
-  function nextWord(incrementLevel){
-    stopWordTimer();
-    if(incrementLevel) level++;
-    current=[]; pickBankFromAnswers(); startWordTimer(); renderUI();
-  }
-
-  function startWordTimer(){ wordDeadlineAt=performance.now()+COUNTDOWN_SECONDS*1000; tickWordTimer(); wordTimerInterval=setInterval(tickWordTimer,100); }
-  function stopWordTimer(){ if(wordTimerInterval) clearInterval(wordTimerInterval); wordTimerInterval=null; }
-  function tickWordTimer(){
-    const now=performance.now(), total=COUNTDOWN_SECONDS*1000, remain=clamp(wordDeadlineAt-now,0,total);
-    cdFill.style.width = `${(remain/total)*100}%`;
-    if(remain<=0) onWordTimeout();
-  }
-
-  function onWordTimeout(){
-    stopWordTimer();
-    lives = Math.max(0, lives-1);
-    if(lives===0){ gameOver(); return; }
-    current=[]; pickBankFromAnswers(); startWordTimer(); renderUI();
-  }
-  function gameOver(){
-    stopWordTimer();
-    const levelsCompleted=Math.max(0,level-1);
-    document.getElementById('summaryText').textContent=`You reached level ${levelsCompleted}.`;
-    gameOverModal.classList.add('show');
-  }
-
-  function handleLetterTap(letter, bankIndex){
-  if(isAnimating) return;
-  if(bank[bankIndex]?.used) return;
-  if(current.length>=5) return;
-
-  // mark bank letter used and append to guess
-  bank[bankIndex].used = true;
-  current.push({ ch: letter, bankIndex });
-
-  // which slot index did we just fill?
-  const slotIndex = current.length - 1;
-
-  // re-render UI so the new letter shows
-  renderUI();
-
-  // pop & glow the slot we just filled
-  requestAnimationFrame(() => {
-    const slotEl = document.querySelector(`#answerRow .tile:nth-child(${slotIndex + 1})`);
-    if (slotEl) {
-      slotEl.classList.remove('slot-pop');
-      void slotEl.offsetWidth; // restart animation
-      slotEl.classList.add('slot-pop');
-    }
-  });
-
-  // continue as before
-  autoSubmitIfFull();
-}
-
-  function handleBackspace(){
-    if(isAnimating||!current.length) return;
-    const last=current.pop(); if(last&&bank[last.bankIndex]) bank[last.bankIndex].used=false;
-    renderUI();
-  }
-  function shuffleBank(){
-  const unused=[],pos=[];
-  bank.forEach((b,i)=>{ if(!b.used){ unused.push(b.ch); pos.push(i);} });
-  shuffleArray(unused); pos.forEach((p,i)=> bank[p].ch=unused[i]);
-
-  // Re-render the letters
-  renderUI();
-
-  // Subtle jiggle on the bank container to signal shuffle
-  bankRow.classList.remove('jiggle');
-  void bankRow.offsetWidth;           // reflow to restart animation
-  bankRow.classList.add('jiggle');
-  setTimeout(()=> bankRow.classList.remove('jiggle'), 300);
-}
-
-  function autoSubmitIfFull(){ if(current.length===5){ submitGuess(current.map(x=>x.ch).join('')); } }
-
-  async function submitGuess(word){
-    if(isAnimating) return;
-    const upper = word.toUpperCase();
-    const isValid = ACCEPTED_SET.has(upper) || ANSWER_SET.has(upper);
-    if (isValid) {
-  isAnimating = true;
-
-  // Pause the countdown while we celebrate (prevents timeouts during the animation)
-  stopWordTimer();
-
-  // Play pop + wiggle on the 5 tiles
-  answerRow.classList.add('celebrate');
-
-  // 520ms animation + max stagger (4 * 45ms) ≈ 700ms total
-  await sleep(720);
-
-  answerRow.classList.remove('celebrate');
-  isAnimating = false;
-
-  // Now advance the level (this restarts the timer inside nextWord)
-  nextWord(true);
-  renderUI();
-    }else{
-      isAnimating=true;
-      answerRow.classList.add('shake'); await sleep(240); answerRow.classList.remove('shake');
-      while(current.length){ const x=current.pop(); if(bank[x.bankIndex]) bank[x.bankIndex].used=false; }
-      isAnimating=false; renderUI();
-    }
-  }
-
   function renderUI(){
-    // Lives: set slice index for continuous strip
+    // Lives
     livesRow.innerHTML='';
     for(let i=0;i<STARTING_LIVES;i++){
       const d=document.createElement('div');
       d.className='life'+(i<lives?' on':'');
-      d.style.setProperty('--i', i);
       livesRow.appendChild(d);
     }
-
     levelLabel.textContent='Level '+Math.max(1,level);
 
-    // Answer tiles (continuous gradient slices)
+    // Answer tiles
     answerRow.innerHTML='';
     for(let i=0;i<5;i++){
       const t=document.createElement('div');
@@ -564,105 +364,185 @@ introModal.classList.add('show');
       const btn=document.createElement('button');
       btn.type='button'; btn.disabled=b.used; btn.dataset.index=String(idx);
       const span=document.createElement('span'); span.className='letter grad-text'; span.textContent=b.ch;
-      btn.appendChild(span); bankRow.appendChild(btn);
+      btn.appendChild(span);
+      bankRow.appendChild(btn);
     });
   }
 
-  // Press with visual feedback, then tap after a tiny delay so the effect shows
-bankRow.addEventListener('pointerdown', (e)=>{
-  const btn = e.target.closest('button');
-  if (!btn || btn.disabled) return;
-
-  btn.classList.add('is-pressed');
-
-  const idx = Number(btn.dataset.index);
-  if (Number.isInteger(idx)) {
-    setTimeout(() => { handleLetterTap(bank[idx].ch, idx); }, 80);
+  function startWordTimer(){
+    wordDeadlineAt = performance.now() + COUNTDOWN_SECONDS*1000;
+    tickTimer();
+    stopWordTimer();
+    timerHandle = setInterval(tickTimer, 100);
   }
-}, {passive:true});
+  function stopWordTimer(){ if(timerHandle){ clearInterval(timerHandle); timerHandle=null; } }
+  function tickTimer(){
+    const now=performance.now(), total=COUNTDOWN_SECONDS*1000, remain=clamp(wordDeadlineAt-now,0,total);
+    cdFill.style.width = `${(remain/total)*100}%`;
+    if(remain<=0) onTimeout();
+  }
 
-// Remove press state on release
-bankRow.addEventListener('pointerup', (e)=>{
-  const btn = e.target.closest('button');
-  if (btn) btn.classList.remove('is-pressed');
-}, {passive:true});
+  function onTimeout(){
+    stopWordTimer();
+    lives = Math.max(0, lives-1);
+    if(lives===0){ return gameOver(); }
+    current=[]; pickBankFromAnswers(); startWordTimer(); renderUI();
+  }
 
-// Clean up on leave/cancel (covers drag-off and interruptions)
-bankRow.addEventListener('pointerout', (e)=>{
-  const btn = e.target.closest('button');
-  if (btn) btn.classList.remove('is-pressed');
-}, {passive:true});
+  function gameOver(){
+    stopWordTimer();
+    const levelsCompleted=Math.max(0,level-1);
+    document.getElementById('summaryText').textContent=`You reached level ${levelsCompleted}.`;
+    gameOverModal.classList.add('show');
+  }
 
-bankRow.addEventListener('pointercancel', (e)=>{
-  const btn = e.target.closest('button');
-  if (btn) btn.classList.remove('is-pressed');
-}, {passive:true});
+  function primeBoard(){
+    resetState();
+    pickBankFromAnswers();
+    cdFill.style.width='100%';    // full bar while paused under the modal
+    renderUI();
+  }
 
+  function startGame(){
+    introModal.classList.remove('show');
+    gameOverModal.classList.remove('show');
+    resetState();
+    pickBankFromAnswers();
+    renderUI();
+    startWordTimer();
+  }
+
+  function nextWord(incrementLevel){
+    stopWordTimer();
+    if(incrementLevel) level++;
+    current=[]; pickBankFromAnswers(); startWordTimer(); renderUI();
+  }
+
+  function handleLetterTap(letter, bankIndex){
+    if(isAnimating) return;
+    if(bank[bankIndex]?.used) return;
+    if(current.length>=5) return;
+
+    bank[bankIndex].used = true;
+    current.push({ ch: letter, bankIndex });
+
+    const slotIndex = current.length - 1;
+    renderUI();
+
+    // slot pop
+    requestAnimationFrame(()=>{
+      const slotEl = document.querySelector(`#answerRow .tile:nth-child(${slotIndex+1})`);
+      if(slotEl){
+        slotEl.classList.remove('slot-pop');
+        void slotEl.offsetWidth;
+        slotEl.classList.add('slot-pop');
+      }
+    });
+
+    if(current.length===5) submitGuess(current.map(x=>x.ch).join(''));
+  }
+
+  function handleBackspace(){
+    if(isAnimating||!current.length) return;
+    const last=current.pop();
+    if(last && bank[last.bankIndex]) bank[last.bankIndex].used=false;
+    renderUI();
+  }
+
+  function shuffleBank(){
+    const unused=[],pos=[];
+    bank.forEach((b,i)=>{ if(!b.used){ unused.push(b.ch); pos.push(i); } });
+    fyShuffle(unused); pos.forEach((p,i)=> bank[p].ch=unused[i]);
+    renderUI();
+    bankRow.classList.remove('jiggle'); void bankRow.offsetWidth; bankRow.classList.add('jiggle');
+    setTimeout(()=> bankRow.classList.remove('jiggle'), 300);
+  }
+
+  async function submitGuess(word){
+    if(isAnimating) return;
+    const w = word.toUpperCase();
+    const isValid = ACCEPTED_SET.has(w) || ANSWER_SET.has(w);
+
+    if(isValid){
+      isAnimating = true;
+      stopWordTimer();
+      answerRow.classList.add('celebrate');
+      await sleep(720); // animation + stagger
+      answerRow.classList.remove('celebrate');
+      isAnimating = false;
+      nextWord(true);
+    }else{
+      isAnimating = true;
+      answerRow.classList.add('shake');
+      await sleep(240);
+      answerRow.classList.remove('shake');
+      while(current.length){
+        const x=current.pop();
+        if(bank[x.bankIndex]) bank[x.bankIndex].used=false;
+      }
+      isAnimating = false;
+      renderUI();
+      // timer continues
+    }
+  }
+
+  // ===== Events =====
+  bankRow.addEventListener('pointerdown', (e)=>{
+    const btn = e.target.closest('button'); if(!btn || btn.disabled) return;
+    btn.classList.add('is-pressed');
+    const idx = Number(btn.dataset.index);
+    if(Number.isInteger(idx)){ setTimeout(()=>handleLetterTap(bank[idx].ch, idx), 80); }
+  }, {passive:true});
+  bankRow.addEventListener('pointerup',   e=>{ const b=e.target.closest('button'); if(b) b.classList.remove('is-pressed'); }, {passive:true});
+  bankRow.addEventListener('pointerleave',e=>{ const b=e.target.closest('button'); if(b) b.classList.remove('is-pressed'); }, {passive:true});
+  bankRow.addEventListener('pointercancel',e=>{ const b=e.target.closest('button'); if(b) b.classList.remove('is-pressed'); }, {passive:true});
+
+  function attachPress(btn){
+    const press=()=>btn.classList.add('is-pressed');
+    const rel =()=>btn.classList.remove('is-pressed');
+    btn.addEventListener('pointerdown', press, {passive:true});
+    btn.addEventListener('pointerup', rel, {passive:true});
+    btn.addEventListener('pointerleave', rel, {passive:true});
+    btn.addEventListener('pointercancel', rel, {passive:true});
+  }
+  attachPress(shuffleBtn); attachPress(backBtn);
 
   shuffleBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); shuffleBank(); }, {passive:false});
-  backBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); handleBackspace(); }, {passive:false});
-  /* Press feedback helper + attach */
-function attachPressFeedback(btn){
-  const press   = () => btn.classList.add('is-pressed');
-  const release = () => btn.classList.remove('is-pressed');
-  btn.addEventListener('pointerdown', press, {passive:true});
-  btn.addEventListener('pointerup', release, {passive:true});
-  btn.addEventListener('pointerleave', release, {passive:true});
-  btn.addEventListener('pointercancel', release, {passive:true});
-}
-attachPressFeedback(shuffleBtn);
-attachPressFeedback(backBtn);
-
+  backBtn   .addEventListener('pointerdown', (e)=>{ e.preventDefault(); handleBackspace(); }, {passive:false});
 
   document.getElementById('playBtn').addEventListener('pointerdown', (e)=>{ e.preventDefault(); startGame(); }, {passive:false});
   document.getElementById('againBtn').addEventListener('pointerdown', (e)=>{ e.preventDefault(); gameOverModal.classList.remove('show'); startGame(); }, {passive:false});
   document.getElementById('retryBtn').addEventListener('pointerdown', (e)=>{ e.preventDefault(); loadWordLists(); }, {passive:false});
 
-  themeBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); toggleTheme(); }, {passive:false});
+  // Keyboard support (desktop)
+  document.addEventListener('keydown', (e)=>{
+    if (introModal.classList.contains('show') || gameOverModal.classList.contains('show')) return;
 
-  // Keyboard controls (desktop): Space=shuffle (presses button), Backspace=undo (presses button), A–Z=use letter
-document.addEventListener('keydown', (e) => {
-  // Ignore when a modal is open
-  if (introModal.classList.contains('show') || gameOverModal.classList.contains('show')) return;
-
-  // BACKSPACE → visually press the back button + undo
-  if (e.key === 'Backspace') {
-    e.preventDefault();                      // prevent browser back navigation
-    backBtn.classList.add('is-pressed');     // visual press
-    setTimeout(() => backBtn.classList.remove('is-pressed'), 120);
-    handleBackspace();
-    return;
-  }
-
-  // SPACE → visually press the shuffle button + shuffle
-  if (e.key === ' ') {
-    e.preventDefault();                      // prevent page scroll
-    shuffleBtn.classList.add('is-pressed');  // visual press
-    setTimeout(() => shuffleBtn.classList.remove('is-pressed'), 120);
-    shuffleBank();
-    return;
-  }
-
-  // LETTER KEYS → act like clicking the first matching *unused* bank key
-  const ch = (e.key || '').toUpperCase();
-  if (ch >= 'A' && ch <= 'Z') {
-    // find first available matching letter in bank
-    const idx = bank.findIndex(b => !b.used && b.ch === ch);
-    if (idx !== -1) {
-      // briefly show the bank key as pressed for feedback
-      const btn = bankRow.querySelector(`button[data-index="${idx}"]`);
-      if (btn) {
-        btn.classList.add('is-pressed');
-        setTimeout(() => btn.classList.remove('is-pressed'), 100);
-      }
-      // use the same flow/timing as touch so animations look identical
-      setTimeout(() => { handleLetterTap(ch, idx); }, 80);
+    if(e.key==='Backspace'){
+      e.preventDefault();
+      backBtn.classList.add('is-pressed'); setTimeout(()=>backBtn.classList.remove('is-pressed'), 120);
+      handleBackspace(); return;
     }
-  }
-});
+    if(e.key===' '){
+      e.preventDefault();
+      shuffleBtn.classList.add('is-pressed'); setTimeout(()=>shuffleBtn.classList.remove('is-pressed'), 120);
+      shuffleBank(); return;
+    }
+    const ch=(e.key||'').toUpperCase();
+    if(ch>='A' && ch<='Z'){
+      const idx = bank.findIndex(b=>!b.used && b.ch===ch);
+      if(idx!==-1){
+        const btn = bankRow.querySelector(`button[data-index="${idx}"]`);
+        if(btn){ btn.classList.add('is-pressed'); setTimeout(()=>btn.classList.remove('is-pressed'), 100); }
+        setTimeout(()=>handleLetterTap(ch, idx), 80);
+      }
+    }
+  });
 
-  setTheme(sessionStorage.getItem('jumbl-theme')
-    || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'));
+  // Init theme + load lists
+  setTheme(sessionStorage.getItem('jumbl-theme') ||
+           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'));
+  themeBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); toggleTheme(); }, {passive:false});
 
   loadWordLists();
 })();
