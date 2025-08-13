@@ -3,3 +3,8 @@
 index.local.backup.html
 *.local.*
 *backup*.html
+
+# local backups
+index.local.backup.html
+*.local.*
+*backup*.html
