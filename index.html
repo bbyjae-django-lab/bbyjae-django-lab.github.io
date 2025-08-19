@@ -92,6 +92,19 @@
     box-shadow: none;
    }
    a, button{ -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+   /* Make non-interactive chrome inert to touch gestures (prevents double-tap zoom) */
+.header, .title, .lives, .score, .timer-card, .timer-rail, .timer-fill {
+  touch-action: none;
+}
+
+/* These are not interactive; don't let them be tap targets at all */
+.title, .lives, .score, .timer-card {
+  pointer-events: none;
+}
+
+/* The modal card is interactive (buttons inside), so don't disable pointer-events.
+   But do tell Safari it's not for gestures: */
+.card { touch-action: none; }
   html, body, #app, .overlay, .dialog { touch-action: none; }
    button{
      font:inherit; color:inherit;
@@ -512,10 +525,28 @@
    const dialogBody = $("#dialogBody");
    const dialogActions = $("#dialogActions");
    (function preventZoomWebKit(){
-  // We already use user-scalable=no and touch-action:none; just guard old pinch paths
-  document.addEventListener('touchstart', (e) => {
+  // 1) Block pinch-zoom (2+ fingers)
+  document.addEventListener('touchstart', function(e){
     if (e.touches && e.touches.length > 1) e.preventDefault();
   }, { passive: false });
+
+  // 2) Block double-tap smart zoom (second tap within ~350ms)
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function(e){
+    const now = Date.now();
+    if (now - lastTouchEnd <= 350) {
+      e.preventDefault(); // eat the second tap
+    }
+    lastTouchEnd = now;
+  }, { passive: false, capture: true });
+
+  // 3) Block Safari's non-standard gesture events (pinch)
+  ['gesturestart','gesturechange','gestureend'].forEach(type=>{
+    document.addEventListener(type, e => e.preventDefault(), { passive: false });
+  });
+
+  // 4) Belt-and-braces for iOS 13+ dblclick dispatch
+  document.addEventListener('dblclick', e => e.preventDefault(), { passive: false, capture: true });
 })();
 
     // Keep buttons square on rotation/resize (no viewport scaling logic)
@@ -956,6 +987,27 @@
   // NOTE: do not commit on leave anymore (prevents double removals on tiny drift)
   answerRow.addEventListener('pointerleave', cancel);
 })();
+
+// ⬇️ INSERT THIS WHOLE BLOCK between wireAnswerBarTap's closing "})();" and the
+//     "// Keyboard-to-UI press tracking ..." comment
+
+// Swallow taps that land in the grid gaps (not on a .btn-letter / .tile)
+// This prevents stray double-taps on the empty spaces from becoming smart-zoom.
+['touchend','dblclick'].forEach((type)=>{
+  bankRow.addEventListener(type, (e)=>{
+    const t = e.target;
+    if (!(t instanceof HTMLElement) || !t.classList.contains('btn-letter')) {
+      e.preventDefault();
+    }
+  }, { passive: false, capture: true });
+
+  answerRow.addEventListener(type, (e)=>{
+    const t = e.target;
+    if (!(t instanceof HTMLElement) || !t.classList.contains('tile')) {
+      e.preventDefault();
+    }
+  }, { passive: false, capture: true });
+});
 
    // Keyboard-to-UI press tracking (Space/Backspace/letters)
    const keyHold = new Map(); // key -> { type, idx?, el }
